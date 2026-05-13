@@ -55,30 +55,12 @@
   animation: fadeIn 0.3s ease;
 }
 
-.form-card-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 14px; }
-
 .client-form-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 10px;
   align-items: end;
 }
-
-.input-group-dark { display: flex; flex-direction: column; gap: 4px; }
-.input-group-dark label { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-faint); }
-.input-group-dark input {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  border-radius: 8px;
-  padding: 9px 12px;
-  color: white;
-  outline: none;
-  font-family: var(--font);
-  font-size: 0.9rem;
-  transition: border 0.2s;
-}
-.input-group-dark input:focus { border-color: rgba(255,255,255,0.4); }
-.input-group-dark input::placeholder { color: rgba(255,255,255,0.3); }
 
 .add-btn {
   background: var(--green);
@@ -92,17 +74,6 @@
   transition: background 0.2s;
 }
 .add-btn:hover { background: #22c55e; }
-
-.klienci-stats-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
-.klienci-stat-chip {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-glass);
-  border-radius: 20px;
-  padding: 5px 14px;
-  font-size: 0.82rem;
-  color: var(--text-muted);
-}
-.klienci-stat-chip b { color: white; }
 
 .klienci-grid { display: flex; flex-direction: column; gap: 10px; animation: fadeIn 0.4s ease; }
 

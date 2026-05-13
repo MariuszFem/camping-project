@@ -8,7 +8,6 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
   const [search, setSearch] = useState('');
   const [newClient, setNewClient] = useState({ imie: '', nazwisko: '', email: '', telefon: '' });
 
-  /* filtrowanie łączy globalną wyszukiwarkę z lokalną */
   const activeSearch = searchTerm || search;
   const filtered = klienci.filter(k =>
     `${k.imie} ${k.nazwisko} ${k.email}`.toLowerCase().includes(activeSearch.toLowerCase())

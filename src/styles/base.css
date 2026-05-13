@@ -19,11 +19,11 @@
 .landing-page {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  min-height: 100vh;
   width: 100vw;
   color: white;
   font-family: var(--font);
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .main-content {
@@ -32,7 +32,6 @@
   overflow-y: auto;
   background: linear-gradient(180deg, rgba(20,83,45,0) 0%, rgba(0,0,0,0.15) 100%);
 }
-
 .section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 24px; }
 
 .navbar {
@@ -83,8 +82,6 @@
 .modern-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
 
 .loader, .empty-state { color: var(--text-muted); font-style: italic; margin-top: 30px; }
-
-.link { color: var(--gold); cursor: pointer; text-decoration: underline; font-weight: 600; }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(10px); }
