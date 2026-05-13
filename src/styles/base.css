@@ -1,0 +1,92 @@
+/* reset */
+*, *::before, *::after { box-sizing: border-box; }
+#root, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #14532d; }
+
+:root {
+  --bg-glass:       rgba(255,255,255,0.07);
+  --bg-glass-hover: rgba(255,255,255,0.11);
+  --border-glass:   rgba(255,255,255,0.12);
+  --border-hover:   rgba(255,255,255,0.22);
+  --text-muted:     rgba(255,255,255,0.5);
+  --text-faint:     rgba(255,255,255,0.45);
+  --green:          #16a34a;
+  --green-light:    #86efac;
+  --gold:           #fbbf24;
+  --font:           'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --radius:         12px;
+}
+
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  color: white;
+  font-family: var(--font);
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+  background: linear-gradient(180deg, rgba(20,83,45,0) 0%, rgba(0,0,0,0.15) 100%);
+}
+
+.section-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 24px; }
+
+.navbar {
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid var(--border-glass);
+  z-index: 100;
+}
+
+.main-title { font-family: Impact, sans-serif; font-size: 1.8rem; letter-spacing: 2px; }
+
+.nav-center { display: flex; gap: 10px; }
+
+.nav-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: white;
+  color: #14532d;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: var(--font);
+}
+.nav-btn:hover  { background: #f0fdf4; transform: translateY(-1px); }
+.nav-btn.active { background: #14532d; color: white; outline: 1px solid white; }
+
+.btn-gold { background: var(--gold); color: #78350f; }
+
+.logout-link {
+  background: none;
+  border: none;
+  color: var(--gold);
+  font-weight: bold;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: var(--font);
+}
+
+.table-container { background: white; border-radius: var(--radius); overflow: hidden; margin-top: 20px; }
+.modern-table    { width: 100%; border-collapse: collapse; color: #333; }
+.modern-table th { background: #14532d; color: white; padding: 15px; text-align: left; }
+.modern-table td { padding: 12px 15px; border-bottom: 1px solid #eee; }
+
+.loader, .empty-state { color: var(--text-muted); font-style: italic; margin-top: 30px; }
+
+.link { color: var(--gold); cursor: pointer; text-decoration: underline; font-weight: 600; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

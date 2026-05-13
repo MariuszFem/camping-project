@@ -1,0 +1,26 @@
+
+.nav-search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+}
+
+.navbar-search-input {
+  width: 200px;
+  padding: 8px 35px 8px 12px;
+  border: 1.5px solid #3498db;
+  border-radius: 6px;
+  background: white;
+  color: #333;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.search-icon-inline {
+  position: absolute;
+  right: 10px;
+  color: #3498db;
+  font-size: 1rem;
+  pointer-events: none;
+}

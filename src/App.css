@@ -1,0 +1,6 @@
+﻿/* Główny plik CSS – importuje wszystkie moduły stylów */
+@import './styles/base.css';
+@import './styles/cards.css';
+@import './styles/login.css';
+@import './styles/klienci.css';
+@import './styles/search.css';
