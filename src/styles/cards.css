@@ -319,4 +319,5 @@
 }
 .filter-clear:hover { background: #fff5f5; }
 
-.main-content { background: #f5f5f5 !important; }
+/* jasne tło tylko dla widoków z białymi kartami */
+.main-light { background: #f5f5f5 !important; }

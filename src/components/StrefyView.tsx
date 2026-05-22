@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { MOCK_STREFY } from '../data/mockData.ts';
 
-/* gwiazdki na podstawie liczby 1-5 */
 function Stars({ n }: { n: number }) {
   return (
     <span className="stars">
@@ -12,7 +11,6 @@ function Stars({ n }: { n: number }) {
   );
 }
 
-/* kółko z oceną – kolor zależy od wartości */
 function ScoreBadge({ score }: { score: number }) {
   const color = score >= 9 ? '#1a7f37' : score >= 8 ? '#2563eb' : '#d97706';
   return (
@@ -46,7 +44,6 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
   return (
     <div className="view-layout">
 
-      {/* panel filtrów */}
       <aside className="filter-panel">
         <div className="filter-section">
           <div className="filter-title">Status</div>
@@ -96,7 +93,6 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
           ))}
         </div>
 
-        {/* przycisk wyczyść gdy coś aktywne */}
         {(statusFilter !== 'Wszystkie' || sortBy !== 'domyslnie') && (
           <button className="filter-clear" onClick={() => { setStatusFilter('Wszystkie'); setSortBy('domyslnie'); }}>
             ✕ Wyczyść filtry
@@ -105,7 +101,6 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
       </aside>
 
       <div className="listing-main">
-        {/* pasek podsumowania */}
         <div className="summary-bar">
           <span>Znaleziono <b>{filtered.length}</b> {filtered.length === 1 ? 'strefę' : 'stref'}</span>
           {filtered.length > 0 && <span>Ceny od <b>{minCena} zł</b> / noc</span>}
@@ -120,7 +115,6 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
           {filtered.map(s => (
             <div className="listing-card" key={s.id}>
 
-              {/* zdjęcie z tagiem i serduszkiem */}
               <div className="listing-img-wrap">
                 <img src={s.img} alt={s.nazwa} className="listing-img" />
                 {s.tag && <span className="listing-tag">{s.tag}</span>}
@@ -134,7 +128,6 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
               </div>
 
               <div className="listing-body">
-                {/* breadcrumb */}
                 <div className="listing-breadcrumb">Camping › Strefy › {s.nazwa.split('–')[0].trim()}</div>
 
                 <div className="listing-top">
@@ -157,7 +150,7 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                   ))}
                 </ul>
                 <div className="listing-meta">
-                  <span>🏕️ {s.miejsca} miejsc łącznie</span>
+                  <span> {s.miejsca} miejsc łącznie</span>
                   <span style={{ color: s.wolne === 0 ? '#e74c3c' : '#27ae60' }}>
                     ● {s.wolne === 0 ? 'Brak wolnych' : `${s.wolne} wolnych`}
                   </span>
@@ -174,7 +167,7 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                   {s.status === 'Dostępna' ? 'Rezerwuj' : 'Niedostępna'}
                 </button>
                 <div className="listing-avail">
-                  {s.wolne > 0 ? `✓ ${s.wolne} dostępnych` : '✗ Brak miejsc'}
+                  {s.wolne > 0 ? ` ${s.wolne} dostępnych` : '✗ Brak miejsc'}
                 </div>
               </div>
 

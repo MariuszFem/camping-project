@@ -90,5 +90,5 @@ export const NAV_ITEMS = [
   { key: 'Strefy', label: 'Strefy', icon: '' },
   { key: 'Miejsca', label: 'Miejsca', icon: '' },
   { key: 'Klienci', label: 'Klienci', icon: '' },
-  { key: 'Pracownicy', label: 'Pracownicy', icon: '' },
+  { key: 'Pracownik', label: 'Pracownicy', icon: '' },
 ];

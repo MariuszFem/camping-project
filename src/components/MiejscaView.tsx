@@ -34,7 +34,7 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
   const toggleUlubione = (id: number) =>
     setUlubione(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
-  const typIcon = (typ: string) => typ === 'Namiot' ? '⛺' : typ === 'Kamper' ? '🚐' : '🚌';
+  const typIcon = (typ: string) => typ === 'Namiot' ? '' : typ === 'Kamper' ? '' : '';
   const typy = ['Wszystkie', 'Namiot', 'Kamper', 'Przyczepa'];
   const minCena = filtered.length > 0 ? Math.min(...filtered.map(m => m.cenaOd)) : 0;
 
@@ -144,8 +144,8 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                   ))}
                 </ul>
                 <div className="listing-meta">
-                  <span>📐 {m.wymiary}</span>
-                  <span>{m.prąd ? '⚡ Prąd w cenie' : '— Bez prądu'}</span>
+                  <span> {m.wymiary}</span>
+                  <span>{m.prąd ? ' Prąd w cenie' : '— Bez prądu'}</span>
                 </div>
               </div>
 

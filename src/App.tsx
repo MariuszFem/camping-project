@@ -26,18 +26,26 @@ function App() {
     }
     setActiveTab(tabName);
     setData([]);
+    
+    // Jeśli te widoki mają własne komponenty pobierające dane, pomijamy fetch w App.tsx
     if (['Strefy', 'Miejsca', 'Login', 'Klienci'].includes(tabName)) return;
 
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+      // TabName musi być dokładnie takie, jak nazwa kontrolera w ASP.NET, czyli np. 'Pracownik'
       const response = await fetch(`http://localhost:5050/api/${tabName}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
+      
+      if (!response.ok) {
+        throw new Error(`Błąd serwera: ${response.status}`);
+      }
+
       const result = await response.json();
       if (Array.isArray(result)) setData(result);
     } catch (error) {
-      console.error(error);
+      console.error("Błąd pobierania danych:", error);
     } finally {
       setLoading(false);
     }
@@ -55,7 +63,6 @@ function App() {
   const handleLogin = (rola: string) => {
     setIsLoggedIn(true);
     setUserImie(localStorage.getItem('imie') || '');
-    /* po zalogowaniu wróć do Stref lub przejdź do Rezerwacji jeśli admin */
     setActiveTab(rola === 'admin' ? 'Rezerwacje' : 'Strefy');
   };
 
@@ -80,7 +87,7 @@ function App() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <span className="search-icon-inline">🔍</span>
+            <span className="search-icon-inline"></span>
           </div>
         </div>
 
@@ -102,27 +109,28 @@ function App() {
         <div className="nav-right">
           {isLoggedIn ? (
             <span style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.88rem', color: '#86efac' }}>
-              👤 {userImie || 'Użytkownik'}
+               {userImie || 'Użytkownik'}
               <button className="logout-link" onClick={handleLogout}>Wyloguj</button>
             </span>
           ) : (
             <button className="nav-btn" onClick={() => handleNavClick('Login')}>
-              🔑 Logowanie
+               Logowanie
             </button>
           )}
         </div>
       </nav>
 
-      <main className="main-content" style={{ width: '100%', padding: '20px' }}>
+      <main className={`main-content ${(activeTab === 'Strefy' || activeTab === 'Miejsca') ? 'main-light' : ''}`} style={{ width: '100%', padding: '20px' }}>
         {activeTab === 'Strefy'  && <StrefyView  searchTerm={searchTerm} />}
         {activeTab === 'Miejsca' && <MiejscaView searchTerm={searchTerm} />}
         {activeTab === 'Klienci' && <KlienciView searchTerm={searchTerm} />}
 
         {activeTab === 'Login' && <LoginView onLogin={handleLogin} />}
 
-        {(activeTab === 'Pracownicy' || activeTab === 'Rezerwacje') && (
+        {/* NAPRAWIONE: Zmieniono 'Pracownick' na 'Pracownik' */}
+        {(activeTab === 'Pracownik' || activeTab === 'Rezerwacje') && (
           <div>
-            <h2 className="section-title">{activeTab}</h2>
+            <h2 className="section-title">{activeTab === 'Pracownik' ? 'Pracownicy' : activeTab}</h2>
             {loading ? (
               <div className="loader">Pobieranie danych...</div>
             ) : data.length > 0 ? (
@@ -143,16 +151,15 @@ function App() {
                 </table>
               </div>
             ) : (
-              <div className="empty-state">Brak danych w sekcji {activeTab}.</div>
+              <div className="empty-state">Brak danych w sekcji {activeTab === 'Pracownik' ? 'Pracownicy' : activeTab}.</div>
             )}
           </div>
         )}
       </main>
-
-      {/* stopka */}
+      
+      {activeTab !== 'Klienci' && (
       <footer className="footer">
         <div className="footer-content">
-
           <div className="footer-col">
             <h4 className="footer-title">Obsługa Klienta</h4>
             <ul className="footer-links">
@@ -189,17 +196,13 @@ function App() {
             </div>
             <div className="footer-contact">
               <p><strong>Kontakt:</strong></p>
-              <p>📧 kontakt@camping.pl</p>
-              <p>📞 +48 123 456 789</p>
+              <p> kontakt@camping.pl</p>
+              <p> +48 123 456 789</p>
             </div>
           </div>
-
-        </div>
-
-        <div className="footer-bottom">
-          <p>© 2024 Camping System. Wszelkie prawa zastrzeżone.</p>
         </div>
       </footer>
+      )}
     </div>
   );
 }

@@ -1,4 +1,3 @@
-/* stopka */
 .footer {
   background: white;
   border-top: 1px solid #e0e0e0;
@@ -7,7 +6,6 @@
   font-family: var(--font);
 }
 
-/* trzy kolumny */
 .footer-content {
   display: grid;
   grid-template-columns: 1fr 1.4fr 1fr;
@@ -17,7 +15,6 @@
   padding: 40px 40px 30px;
 }
 
-/* tytuł kolumny */
 .footer-title {
   font-size: 1rem;
   font-weight: 700;
@@ -25,7 +22,6 @@
   margin: 0 0 16px;
 }
 
-/* lista linków */
 .footer-links {
   list-style: none;
   padding: 0;
@@ -42,7 +38,6 @@
 }
 .footer-links a:hover { color: #1d4ed8; text-decoration: underline; }
 
-/* opis w kolumnie newsletter */
 .footer-desc {
   font-size: 0.88rem;
   color: #555;
@@ -51,7 +46,6 @@
   text-align: center;
 }
 
-/* formularz newsletter */
 .newsletter-form {
   display: flex;
   gap: 0;
@@ -83,7 +77,6 @@
 }
 .newsletter-btn:hover { background: #cf6d00; }
 
-/* drobny tekst RODO – opcjonalny */
 .footer-small {
   font-size: 0.75rem;
   color: #999;
@@ -91,7 +84,6 @@
   text-align: center;
 }
 
-/* ikony social media */
 .social-icons {
   display: flex;
   gap: 10px;
@@ -115,7 +107,6 @@
 .social-icon.youtube   { background: #ff0000; }
 .social-icon.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
 
-/* dane kontaktowe */
 .footer-contact {
   font-size: 0.85rem;
   color: #555;
@@ -125,12 +116,3 @@
   line-height: 1.5;
 }
 .footer-contact strong { color: #1a1a1a; }
-
-/* pasek copyright */
-.footer-bottom {
-  border-top: 1px solid #eee;
-  text-align: center;
-  padding: 14px 40px;
-  font-size: 0.8rem;
-  color: #aaa;
-}

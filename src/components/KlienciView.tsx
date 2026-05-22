@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { MOCK_KLIENCI } from '../data/mockData.ts';
 
-/* prop searchTerm – tekst z wyszukiwarki w navbarze, nadpisuje lokalny search */
 export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
   const [klienci, setKlienci] = useState(MOCK_KLIENCI);
   const [showForm, setShowForm] = useState(false);
@@ -25,12 +24,22 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
   const avatarColor = (id: number) => ['#16a34a', '#0891b2', '#7c3aed', '#db2777', '#d97706'][id % 5];
 
   return (
-    <div>
+    <div className="klienci-page">
+
       <div className="klienci-header">
-        <h2 className="section-title"> Klienci</h2>
+        <div>
+          <h2 className="klienci-title"> Klienci</h2>
+          <p className="klienci-subtitle">{klienci.length} zarejestrowanych klientów</p>
+        </div>
         <div className="klienci-actions">
-          <div className="search-box">
-            <input type="text" placeholder="Szukaj klienta..." value={search} onChange={e => setSearch(e.target.value)} />
+          <div className="klienci-search">
+            <span className="klienci-search-icon"></span>
+            <input
+              type="text"
+              placeholder="Szukaj po imieniu, nazwisku lub emailu..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
           </div>
           <button className="add-client-btn" onClick={() => setShowForm(!showForm)}>
             {showForm ? '✕ Anuluj' : '+ Dodaj klienta'}
@@ -39,31 +48,64 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
       </div>
 
       {showForm && (
-        <div className="client-form-card">
-          <form onSubmit={handleAdd} className="client-form-grid">
-            <input placeholder="Imię" value={newClient.imie} onChange={e => setNewClient({ ...newClient, imie: e.target.value })} required />
-            <input placeholder="Nazwisko" value={newClient.nazwisko} onChange={e => setNewClient({ ...newClient, nazwisko: e.target.value })} required />
-            <button type="submit" className="add-btn form-submit-btn">Zapisz</button>
+        <div className="klienci-form-card">
+          <h4>Nowy klient</h4>
+          <form onSubmit={handleAdd} className="klienci-form-row">
+            <input
+              placeholder="Imię" required
+              value={newClient.imie}
+              onChange={e => setNewClient({ ...newClient, imie: e.target.value })}
+            />
+            <input
+              placeholder="Nazwisko" required
+              value={newClient.nazwisko}
+              onChange={e => setNewClient({ ...newClient, nazwisko: e.target.value })}
+            />
+            <input
+              placeholder="Email"
+              value={newClient.email}
+              onChange={e => setNewClient({ ...newClient, email: e.target.value })}
+            />
+            <input
+              placeholder="Telefon"
+              value={newClient.telefon}
+              onChange={e => setNewClient({ ...newClient, telefon: e.target.value })}
+            />
+            <button type="submit" className="add-client-btn">Zapisz</button>
           </form>
         </div>
       )}
 
-      <div className="klienci-grid">
+      <div className="klienci-chips">
+        <span className="klienci-chip">Wszyscy: <b>{klienci.length}</b></span>
+        <span className="klienci-chip">Aktywni: <b>{klienci.filter(k => k.rezerwacje > 0).length}</b></span>
+        <span className="klienci-chip">Nowi: <b>{klienci.filter(k => k.rezerwacje === 0).length}</b></span>
+        {activeSearch && <span className="klienci-chip">Wyniki: <b>{filtered.length}</b></span>}
+      </div>
+
+      <div className="klienci-list">
         {filtered.map(k => (
-          <div className="klient-card" key={k.id}>
-            <div className="klient-avatar" style={{ background: avatarColor(k.id) }}>{initials(k.imie, k.nazwisko)}</div>
+          <div className="klient-row" key={k.id}>
+            <div className="klient-avatar" style={{ background: avatarColor(k.id) }}>
+              {initials(k.imie, k.nazwisko)}
+            </div>
             <div className="klient-info">
               <div className="klient-name">{k.imie} {k.nazwisko}</div>
-              <div className="klient-detail"> {k.email}</div>
+              <div className="klient-meta">
+                <span> {k.email}</span>
+                {k.telefon && <span> {k.telefon}</span>}
+              </div>
             </div>
-            <div className="klient-badge-col">
-              <span className={`klient-rez-badge ${k.rezerwacje > 0 ? 'has-rez' : 'no-rez'}`}>
-                {k.rezerwacje} rezerwacji
-              </span>
-            </div>
+            <span className={`klient-badge ${k.rezerwacje > 0 ? 'has-rez' : 'no-rez'}`}>
+              {k.rezerwacje} {k.rezerwacje === 1 ? 'rezerwacja' : 'rezerwacji'}
+            </span>
           </div>
         ))}
+        {filtered.length === 0 && (
+          <div className="klienci-empty">Brak wyników dla „{activeSearch}"</div>
+        )}
       </div>
+
     </div>
   );
 }
