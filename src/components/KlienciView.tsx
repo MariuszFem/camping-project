@@ -1,27 +1,68 @@
-import { useState } from 'react';
-import { MOCK_KLIENCI } from '../data/mockData.ts';
+import { useState, useEffect } from 'react';
+
+interface Klient {
+  klientID: number;
+  imie: string;
+  nazwisko: string;
+  email: string;
+  telefon: string;
+  dataRejestracji: string;
+  rezerwacje: number;
+}
+
+interface NewKlient {
+  imie: string;
+  nazwisko: string;
+  email: string;
+  telefon: string;
+}
 
 export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
-  const [klienci, setKlienci] = useState(MOCK_KLIENCI);
+  const [klienci, setKlienci] = useState<Klient[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
-  const [newClient, setNewClient] = useState({ imie: '', nazwisko: '', email: '', telefon: '' });
+  const [newClient, setNewClient] = useState<NewKlient>({ imie: '', nazwisko: '', email: '', telefon: '' });
+
+  useEffect(() => {
+    fetchKlienci();
+  }, []);
+
+  const fetchKlienci = () => {
+    fetch('http://localhost:5050/api/Klienci/list')
+      .then(r => r.json())
+      .then(data => setKlienci(data))
+      .catch(err => console.error('Błąd pobierania klientów:', err))
+      .finally(() => setLoading(false));
+  };
 
   const activeSearch = searchTerm || search;
   const filtered = klienci.filter(k =>
     `${k.imie} ${k.nazwisko} ${k.email}`.toLowerCase().includes(activeSearch.toLowerCase())
   );
 
-  const handleAdd = (e: React.FormEvent) => {
+  const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
-    const added = { ...newClient, id: klienci.length + 1, rezerwacje: 0 };
-    setKlienci([...klienci, added]);
-    setNewClient({ imie: '', nazwisko: '', email: '', telefon: '' });
-    setShowForm(false);
+    try {
+      const response = await fetch('http://localhost:5050/api/Klienci/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newClient)
+      });
+      if (response.ok) {
+        setNewClient({ imie: '', nazwisko: '', email: '', telefon: '' });
+        setShowForm(false);
+        fetchKlienci();
+      }
+    } catch (err) {
+      console.error('Błąd dodawania klienta:', err);
+    }
   };
 
   const initials = (imie: string, nazwisko: string) => `${imie[0]}${nazwisko[0]}`.toUpperCase();
   const avatarColor = (id: number) => ['#16a34a', '#0891b2', '#7c3aed', '#db2777', '#d97706'][id % 5];
+
+  if (loading) return <div className="loader">Pobieranie klientów...</div>;
 
   return (
     <div className="klienci-page">
@@ -85,8 +126,8 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
 
       <div className="klienci-list">
         {filtered.map(k => (
-          <div className="klient-row" key={k.id}>
-            <div className="klient-avatar" style={{ background: avatarColor(k.id) }}>
+          <div className="klient-row" key={k.klientID}>
+            <div className="klient-avatar" style={{ background: avatarColor(k.klientID) }}>
               {initials(k.imie, k.nazwisko)}
             </div>
             <div className="klient-info">

@@ -1,5 +1,24 @@
-import { useState } from 'react';
-import { MOCK_MIEJSCA } from '../data/mockData.ts';
+import { useState, useEffect } from 'react';
+import { RezerwacjaModal } from './RezerwacjaModal';
+
+interface Miejsce {
+  miejsceID: number;
+  numerMiejsca: string;
+  typ: string;
+  powierzchnia: number;
+  cenaZaDobe: number;
+  dostepnosc: boolean;
+  nazwaStrefy: string;
+  img: string;
+  tag: string | null;
+  ocena: number;
+  liczbaOpinii: number;
+  gwiazdki: number;
+  wymiary: string;
+  prad: boolean;
+  cechy: string;
+  status: string;
+}
 
 function Stars({ n }: { n: number }) {
   return (
@@ -17,29 +36,61 @@ function ScoreBadge({ score }: { score: number }) {
 }
 
 export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
+  const [miejsca, setMiejsca] = useState<Miejsce[]>([]);
+  const [loading, setLoading] = useState(true);
   const [typFilter, setTypFilter]   = useState('Wszystkie');
   const [pradFilter, setPradFilter] = useState<boolean | null>(null);
   const [sortBy, setSortBy]         = useState('domyslnie');
   const [ulubione, setUlubione]     = useState<number[]>([]);
+  const [modalMiejsce, setModalMiejsce] = useState<Miejsce | null>(null);
+  const [successMsg, setSuccessMsg] = useState('');
 
-  let filtered = MOCK_MIEJSCA.filter(m =>
-    `${m.numer} ${m.strefa} ${m.typ}`.toLowerCase().includes(searchTerm.toLowerCase())
+  useEffect(() => {
+    fetch('http://localhost:5050/api/Miejsca/list')
+      .then(r => r.json())
+      .then(data => setMiejsca(data))
+      .catch(err => console.error('Błąd pobierania miejsc:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  let filtered = miejsca.filter(m =>
+    `${m.numerMiejsca} ${m.nazwaStrefy} ${m.typ}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
   if (typFilter !== 'Wszystkie') filtered = filtered.filter(m => m.typ === typFilter);
-  if (pradFilter !== null)       filtered = filtered.filter(m => m.prąd === pradFilter);
-  if (sortBy === 'cena-asc')     filtered = [...filtered].sort((a,b) => a.cenaOd - b.cenaOd);
-  if (sortBy === 'cena-desc')    filtered = [...filtered].sort((a,b) => b.cenaOd - a.cenaOd);
+  if (pradFilter !== null)       filtered = filtered.filter(m => m.prad === pradFilter);
+  if (sortBy === 'cena-asc')     filtered = [...filtered].sort((a,b) => Number(a.cenaZaDobe) - Number(b.cenaZaDobe));
+  if (sortBy === 'cena-desc')    filtered = [...filtered].sort((a,b) => Number(b.cenaZaDobe) - Number(a.cenaZaDobe));
   if (sortBy === 'ocena')        filtered = [...filtered].sort((a,b) => b.ocena - a.ocena);
 
   const toggleUlubione = (id: number) =>
     setUlubione(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
+  const parseCechy = (cechy: string): string[] => {
+    try { return JSON.parse(cechy); } catch { return []; }
+  };
+
   const typIcon = (typ: string) => typ === 'Namiot' ? '' : typ === 'Kamper' ? '' : '';
   const typy = ['Wszystkie', 'Namiot', 'Kamper', 'Przyczepa'];
-  const minCena = filtered.length > 0 ? Math.min(...filtered.map(m => m.cenaOd)) : 0;
+  const minCena = filtered.length > 0 ? Math.min(...filtered.map(m => Number(m.cenaZaDobe))) : 0;
+
+  if (loading) return <div className="loader">Pobieranie miejsc...</div>;
 
   return (
     <div className="view-layout">
+      {modalMiejsce && (
+        <RezerwacjaModal
+          miejsceID={modalMiejsce.miejsceID}
+          nazwaLokalizacji={`Miejsce ${modalMiejsce.numerMiejsca} – ${modalMiejsce.nazwaStrefy}`}
+          cenaZaDobe={modalMiejsce.cenaZaDobe}
+          onClose={() => setModalMiejsce(null)}
+          onSuccess={() => {
+            setModalMiejsce(null);
+            setSuccessMsg('Rezerwacja złożona pomyślnie!');
+            setTimeout(() => setSuccessMsg(''), 4000);
+          }}
+        />
+      )}
+      {successMsg && <div className="success-toast">{successMsg}</div>}
 
       <aside className="filter-panel">
         <div className="filter-section">
@@ -50,7 +101,7 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                 onChange={() => setTypFilter(t)} />
               <span>{t}</span>
               <span className="filter-count">
-                {t === 'Wszystkie' ? MOCK_MIEJSCA.length : MOCK_MIEJSCA.filter(m => m.typ === t).length}
+                {t === 'Wszystkie' ? miejsca.length : miejsca.filter(m => m.typ === t).length}
               </span>
             </label>
           ))}
@@ -108,26 +159,26 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
 
         <div className="listing-grid">
           {filtered.map(m => (
-            <div className="listing-card" key={m.id}>
+            <div className="listing-card" key={m.miejsceID}>
 
               <div className="listing-img-wrap">
-                <img src={m.img} alt={m.numer} className="listing-img" />
+                <img src={m.img} alt={m.numerMiejsca} className="listing-img" />
                 {m.tag && <span className="listing-tag">{m.tag}</span>}
                 <button
-                  className={`heart-btn ${ulubione.includes(m.id) ? 'active' : ''}`}
-                  onClick={() => toggleUlubione(m.id)}
+                  className={`heart-btn ${ulubione.includes(m.miejsceID) ? 'active' : ''}`}
+                  onClick={() => toggleUlubione(m.miejsceID)}
                 >
-                  {ulubione.includes(m.id) ? '♥' : '♡'}
+                  {ulubione.includes(m.miejsceID) ? '♥' : '♡'}
                 </button>
               </div>
 
               <div className="listing-body">
                 <div className="listing-breadcrumb">
-                  Camping › {m.strefa} › Miejsce {m.numer}
+                  Camping › {m.nazwaStrefy} › Miejsce {m.numerMiejsca}
                 </div>
                 <div className="listing-top">
                   <div>
-                    <h3 className="listing-title">{typIcon(m.typ)} Miejsce {m.numer}</h3>
+                    <h3 className="listing-title">{typIcon(m.typ)} Miejsce {m.numerMiejsca}</h3>
                     <Stars n={m.gwiazdki} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -137,24 +188,25 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                     <ScoreBadge score={m.ocena} />
                   </div>
                 </div>
-                <p className="listing-desc">{m.strefa} · {m.typ} · {m.wymiary}</p>
+                <p className="listing-desc">{m.nazwaStrefy} · {m.typ} · {m.wymiary}</p>
                 <ul className="listing-features">
-                  {m.cechy.map((c, i) => (
+                  {parseCechy(m.cechy).map((c, i) => (
                     <li key={i}><span className="feat-dot">✓</span>{c}</li>
                   ))}
                 </ul>
                 <div className="listing-meta">
                   <span> {m.wymiary}</span>
-                  <span>{m.prąd ? ' Prąd w cenie' : '— Bez prądu'}</span>
+                  <span>{m.prad ? ' Prąd w cenie' : '— Bez prądu'}</span>
                 </div>
               </div>
 
               <div className="listing-price-box">
                 <div className="listing-price-label">Od</div>
-                <div className="listing-price">{m.cenaOd} zł<span>/noc</span></div>
+                <div className="listing-price">{m.cenaZaDobe} zł<span>/noc</span></div>
                 <button
                   className={`listing-btn ${m.status !== 'Wolne' ? 'disabled' : ''}`}
                   disabled={m.status !== 'Wolne'}
+                  onClick={() => m.status === 'Wolne' && setModalMiejsce(m)}
                 >
                   {m.status === 'Wolne' ? 'Rezerwuj' : 'Zajęte'}
                 </button>

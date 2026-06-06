@@ -2,9 +2,10 @@ import { useState } from 'react';
 
 interface LoginViewProps {
   onLogin: (rola: string) => void;
+  onRegisterClick?: () => void;
 }
 
-export function LoginView({ onLogin }: LoginViewProps) {
+export function LoginView({ onLogin, onRegisterClick }: LoginViewProps) {
   const [credentials, setCredentials] = useState({ login: '', haslo: '' });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -27,6 +28,7 @@ export function LoginView({ onLogin }: LoginViewProps) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('rola', data.rola);
         localStorage.setItem('imie', data.imie);
+        if (data.klientID) localStorage.setItem('klientID', data.klientID.toString());
 
         onLogin(data.rola);
       } else {
@@ -72,6 +74,15 @@ export function LoginView({ onLogin }: LoginViewProps) {
             <button type="submit" className="login-btn" disabled={loading}>
               {loading ? 'Łączenie...' : 'Zaloguj się →'}
             </button>
+            {onRegisterClick && (
+              <div style={{ textAlign: 'center', fontSize: '0.85rem', color: '#94a3b8', marginTop: '0.5rem' }}>
+                Nie masz konta?{' '}
+                <button type="button" onClick={onRegisterClick}
+                  style={{ background: 'none', border: 'none', color: '#60a5fa', cursor: 'pointer', textDecoration: 'underline', fontFamily: 'inherit' }}>
+                  Zarejestruj się
+                </button>
+              </div>
+            )}
           </form>
         </div>
       </div>

@@ -78,7 +78,7 @@
 .input-group input::placeholder { color: rgba(255,255,255,0.35); }
 
 .login-btn {
-  background: var(--green);
+  background: #2563eb;
   color: white;
   padding: 14px;
   border-radius: 10px;
@@ -89,7 +89,7 @@
   font-family: var(--font);
   transition: background 0.2s;
 }
-.login-btn:hover:not(:disabled) { background: #22c55e; }
+.login-btn:hover:not(:disabled) { background: #1d4ed8; }
 .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .login-error {
