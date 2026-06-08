@@ -29,9 +29,15 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
   }, []);
 
   const fetchKlienci = () => {
-    fetch('http://localhost:5050/api/Klienci/list')
-      .then(r => r.json())
-      .then(data => setKlienci(data))
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:5050/api/Klienci/list', {
+      headers: { 'Authorization': `Bearer ${token}` }
+    })
+      .then(r => {
+        if (!r.ok) throw new Error(`${r.status}`);
+        return r.json();
+      })
+      .then(data => setKlienci(Array.isArray(data) ? data : []))
       .catch(err => console.error('Błąd pobierania klientów:', err))
       .finally(() => setLoading(false));
   };

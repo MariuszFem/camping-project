@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { RezerwacjaModal } from './RezerwacjaModal';
 
 interface Strefa {
   strefaID: number;
@@ -11,10 +12,19 @@ interface Strefa {
   liczbaOpinii: number;
   gwiazdki: number;
   cenaOd: number;
-  cechy: string; // JSON string
+  cechy: string;
   miejscaLacznie: number;
   wolneMiejsca: number;
   status: string;
+}
+
+interface MiejsceWStrefie {
+  miejsceID: number;
+  numerMiejsca: string;
+  typ: string;
+  cenaZaDobe: number;
+  status: string;
+  wymiary: string;
 }
 
 function Stars({ n }: { n: number }) {
@@ -42,6 +52,11 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
   const [statusFilter, setStatusFilter] = useState('Wszystkie');
   const [sortBy, setSortBy]             = useState('domyslnie');
   const [ulubione, setUlubione]         = useState<number[]>([]);
+  const [wybranaStrefa, setWybranaStrefa] = useState<Strefa | null>(null);
+  const [miejscaStrefy, setMiejscaStrefy] = useState<MiejsceWStrefie[]>([]);
+  const [loadingMiejsca, setLoadingMiejsca] = useState(false);
+  const [modalMiejsce, setModalMiejsce] = useState<MiejsceWStrefie | null>(null);
+  const [successMsg, setSuccessMsg] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:5050/api/Strefy/list')
@@ -63,6 +78,20 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
   const toggleUlubione = (id: number) =>
     setUlubione(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
 
+  const handleRezerwujStrefe = async (strefa: Strefa) => {
+    setWybranaStrefa(strefa);
+    setLoadingMiejsca(true);
+    try {
+      const res = await fetch('http://localhost:5050/api/Miejsca/list');
+      const data = await res.json();
+      const wolne = data.filter((m: MiejsceWStrefie & { strefaID: number }) =>
+        m.strefaID === strefa.strefaID && m.status === 'Wolne'
+      );
+      setMiejscaStrefy(wolne);
+    } catch { setMiejscaStrefy([]); }
+    finally { setLoadingMiejsca(false); }
+  };
+
   const parseCechy = (cechy: string): string[] => {
     try { return JSON.parse(cechy); } catch { return []; }
   };
@@ -75,6 +104,59 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
 
   return (
     <div className="view-layout">
+      {modalMiejsce && wybranaStrefa && (
+        <RezerwacjaModal
+          miejsceID={modalMiejsce.miejsceID}
+          nazwaLokalizacji={`Miejsce ${modalMiejsce.numerMiejsca} – ${wybranaStrefa.nazwaStrefy}`}
+          cenaZaDobe={modalMiejsce.cenaZaDobe}
+          onClose={() => setModalMiejsce(null)}
+          onSuccess={() => {
+            setModalMiejsce(null);
+            setWybranaStrefa(null);
+            setSuccessMsg('Rezerwacja złożona pomyślnie!');
+            setTimeout(() => setSuccessMsg(''), 4000);
+          }}
+        />
+      )}
+
+      {wybranaStrefa && !modalMiejsce && (
+        <div className="modal-overlay" onClick={() => setWybranaStrefa(null)}>
+          <div className="modal-card" style={{ maxWidth: 500 }} onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3 className="modal-title">Wybierz miejsce</h3>
+              <button className="modal-close" onClick={() => setWybranaStrefa(null)}>✕</button>
+            </div>
+            <p style={{ color: '#64748b', fontSize: '0.88rem', marginBottom: 16 }}>
+              Wolne miejsca w strefie: <b style={{ color: '#1e293b' }}>{wybranaStrefa.nazwaStrefy}</b>
+            </p>
+            {loadingMiejsca ? (
+              <div style={{ color: '#64748b', padding: '1rem', textAlign: 'center' }}>Ładowanie miejsc...</div>
+            ) : miejscaStrefy.length === 0 ? (
+              <div style={{ color: '#64748b', padding: '1rem', textAlign: 'center' }}>Brak wolnych miejsc w tej strefie.</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {miejscaStrefy.map(m => (
+                  <div key={m.miejsceID} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                    <div>
+                      <div style={{ fontWeight: 700, color: '#1e293b' }}>Miejsce {m.numerMiejsca}</div>
+                      <div style={{ fontSize: '0.82rem', color: '#64748b' }}>{m.typ} · {m.wymiary}</div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                      <span style={{ fontWeight: 700, color: '#2563eb' }}>{m.cenaZaDobe} zł/noc</span>
+                      <button onClick={() => setModalMiejsce(m)}
+                        style={{ background: '#e67e00', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontWeight: 700, fontFamily: 'inherit' }}>
+                        Rezerwuj
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {successMsg && <div className="success-toast">{successMsg}</div>}
 
       <aside className="filter-panel">
         <div className="filter-section">
@@ -180,6 +262,7 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                 <button
                   className={`listing-btn ${s.status !== 'Dostępna' ? 'disabled' : ''}`}
                   disabled={s.status !== 'Dostępna'}
+                  onClick={() => s.status === 'Dostępna' && handleRezerwujStrefe(s)}
                 >
                   {s.status === 'Dostępna' ? 'Rezerwuj' : 'Niedostępna'}
                 </button>

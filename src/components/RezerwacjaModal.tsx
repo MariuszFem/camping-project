@@ -29,11 +29,7 @@ const weatherCodeToInfo = (code: number): { opis: string; ikona: string } => {
 export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClose, onSuccess }: Props) {
   const today = new Date().toISOString().split('T')[0];
 
-  const [form, setForm] = useState({
-    dataPrzyjazdu: '',
-    dataWyjazdu: '',
-    liczbaOsob: 1,
-  });
+  const [form, setForm] = useState({ dataPrzyjazdu: '', dataWyjazdu: '', liczbaOsob: 1 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [pogoda, setPogoda] = useState<Pogoda | null>(null);
@@ -43,7 +39,7 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
   const isLoggedIn = !!localStorage.getItem('token');
 
   const handleDatePrzyjazdu = async (data: string) => {
-    setForm({ ...form, dataPrzyjazdu: data });
+    setForm(prev => ({ ...prev, dataPrzyjazdu: data }));
     if (!data) return;
     setPogodaLoading(true);
     setPogoda(null);
@@ -51,18 +47,19 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
       const res = await fetch(`http://localhost:5050/api/Pogoda?data=${data}`);
       if (res.ok) {
         const json = await res.json();
-        const code = json.daily?.weathercode?.[0] ?? 0;
-        const info = weatherCodeToInfo(code);
+        const info = weatherCodeToInfo(json.weatherCode ?? 0);
         setPogoda({
-          temp_max: json.daily?.temperature_2m_max?.[0] ?? 0,
-          temp_min: json.daily?.temperature_2m_min?.[0] ?? 0,
-          opady: json.daily?.precipitation_sum?.[0] ?? 0,
+          temp_max: json.tempMax ?? 0,
+          temp_min: json.tempMin ?? 0,
+          opady: json.opady ?? 0,
           ...info
         });
       }
     } catch { /* brak pogody - nie blokuj */ }
     finally { setPogodaLoading(false); }
   };
+
+  const liczbaDni = form.dataPrzyjazdu && form.dataWyjazdu
     ? Math.max(0, Math.ceil(
         (new Date(form.dataWyjazdu).getTime() - new Date(form.dataPrzyjazdu).getTime())
         / (1000 * 60 * 60 * 24)
@@ -75,30 +72,16 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
     e.preventDefault();
     setError('');
 
-    if (!isLoggedIn) {
-      setError('Musisz być zalogowany żeby złożyć rezerwację.');
-      return;
-    }
-
-    if (!form.dataPrzyjazdu || !form.dataWyjazdu) {
-      setError('Wybierz daty przyjazdu i wyjazdu.');
-      return;
-    }
-
-    if (new Date(form.dataWyjazdu) <= new Date(form.dataPrzyjazdu)) {
-      setError('Data wyjazdu musi być późniejsza niż przyjazdu.');
-      return;
-    }
+    if (!isLoggedIn) { setError('Musisz być zalogowany żeby złożyć rezerwację.'); return; }
+    if (!form.dataPrzyjazdu || !form.dataWyjazdu) { setError('Wybierz daty przyjazdu i wyjazdu.'); return; }
+    if (new Date(form.dataWyjazdu) <= new Date(form.dataPrzyjazdu)) { setError('Data wyjazdu musi być późniejsza niż przyjazdu.'); return; }
 
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:5050/api/Rezerwacje/add', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
         body: JSON.stringify({
           klientID: klientID || 1,
           miejsceID,
@@ -140,35 +123,20 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
           <div className="modal-row">
             <div className="modal-field">
               <label>Przyjazd</label>
-              <input
-                type="date"
-                min={today}
-                required
-                value={form.dataPrzyjazdu}
-                onChange={e => handleDatePrzyjazdu(e.target.value)}
-              />
+              <input type="date" min={today} required value={form.dataPrzyjazdu}
+                onChange={e => handleDatePrzyjazdu(e.target.value)} />
             </div>
             <div className="modal-field">
               <label>Wyjazd</label>
-              <input
-                type="date"
-                min={form.dataPrzyjazdu || today}
-                required
-                value={form.dataWyjazdu}
-                onChange={e => setForm({ ...form, dataWyjazdu: e.target.value })}
-              />
+              <input type="date" min={form.dataPrzyjazdu || today} required value={form.dataWyjazdu}
+                onChange={e => setForm(prev => ({ ...prev, dataWyjazdu: e.target.value }))} />
             </div>
           </div>
 
           <div className="modal-field">
             <label>Liczba osób</label>
-            <input
-              type="number"
-              min={1}
-              max={10}
-              value={form.liczbaOsob}
-              onChange={e => setForm({ ...form, liczbaOsob: parseInt(e.target.value) })}
-            />
+            <input type="number" min={1} max={10} value={form.liczbaOsob}
+              onChange={e => setForm(prev => ({ ...prev, liczbaOsob: parseInt(e.target.value) }))} />
           </div>
 
           {pogodaLoading && (
@@ -204,16 +172,10 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
           {error && <div className="modal-error">{error}</div>}
 
           {!isLoggedIn && (
-            <div className="modal-warning">
-              Zaloguj się żeby złożyć rezerwację.
-            </div>
+            <div className="modal-warning">Zaloguj się żeby złożyć rezerwację.</div>
           )}
 
-          <button
-            type="submit"
-            className="modal-submit-btn"
-            disabled={loading || !isLoggedIn || !!error}
-          >
+          <button type="submit" className="modal-submit-btn" disabled={loading || !isLoggedIn || !!error}>
             {loading ? 'Składanie...' : 'Zarezerwuj'}
           </button>
         </form>
