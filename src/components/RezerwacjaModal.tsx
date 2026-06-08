@@ -8,6 +8,24 @@ interface Props {
   onSuccess: () => void;
 }
 
+interface Pogoda {
+  temp_max: number;
+  temp_min: number;
+  opady: number;
+  opis: string;
+  ikona: string;
+}
+
+const weatherCodeToInfo = (code: number): { opis: string; ikona: string } => {
+  if (code === 0) return { opis: 'Słonecznie', ikona: '☀️' };
+  if (code <= 3) return { opis: 'Pochmurno', ikona: '⛅' };
+  if (code <= 49) return { opis: 'Mgła', ikona: '🌫️' };
+  if (code <= 69) return { opis: 'Deszcz', ikona: '🌧️' };
+  if (code <= 79) return { opis: 'Śnieg', ikona: '❄️' };
+  if (code <= 99) return { opis: 'Burza', ikona: '⛈️' };
+  return { opis: 'Nieznana', ikona: '🌡️' };
+};
+
 export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClose, onSuccess }: Props) {
   const today = new Date().toISOString().split('T')[0];
 
@@ -18,11 +36,33 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [pogoda, setPogoda] = useState<Pogoda | null>(null);
+  const [pogodaLoading, setPogodaLoading] = useState(false);
 
   const klientID = parseInt(localStorage.getItem('klientID') || '0');
   const isLoggedIn = !!localStorage.getItem('token');
 
-  const liczbaDni = form.dataPrzyjazdu && form.dataWyjazdu
+  const handleDatePrzyjazdu = async (data: string) => {
+    setForm({ ...form, dataPrzyjazdu: data });
+    if (!data) return;
+    setPogodaLoading(true);
+    setPogoda(null);
+    try {
+      const res = await fetch(`http://localhost:5050/api/Pogoda?data=${data}`);
+      if (res.ok) {
+        const json = await res.json();
+        const code = json.daily?.weathercode?.[0] ?? 0;
+        const info = weatherCodeToInfo(code);
+        setPogoda({
+          temp_max: json.daily?.temperature_2m_max?.[0] ?? 0,
+          temp_min: json.daily?.temperature_2m_min?.[0] ?? 0,
+          opady: json.daily?.precipitation_sum?.[0] ?? 0,
+          ...info
+        });
+      }
+    } catch { /* brak pogody - nie blokuj */ }
+    finally { setPogodaLoading(false); }
+  };
     ? Math.max(0, Math.ceil(
         (new Date(form.dataWyjazdu).getTime() - new Date(form.dataPrzyjazdu).getTime())
         / (1000 * 60 * 60 * 24)
@@ -105,7 +145,7 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
                 min={today}
                 required
                 value={form.dataPrzyjazdu}
-                onChange={e => setForm({ ...form, dataPrzyjazdu: e.target.value })}
+                onChange={e => handleDatePrzyjazdu(e.target.value)}
               />
             </div>
             <div className="modal-field">
@@ -130,6 +170,29 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
               onChange={e => setForm({ ...form, liczbaOsob: parseInt(e.target.value) })}
             />
           </div>
+
+          {pogodaLoading && (
+            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 14px', fontSize: '0.85rem', color: '#64748b' }}>
+              🌡️ Pobieranie prognozy pogody...
+            </div>
+          )}
+
+          {pogoda && !pogodaLoading && (
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '12px 14px' }}>
+              <div style={{ fontSize: '0.75rem', color: '#3b82f6', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
+                Prognoza pogody na dzień przyjazdu (Mazury)
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <span style={{ fontSize: '2rem' }}>{pogoda.ikona}</span>
+                <div>
+                  <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.95rem' }}>{pogoda.opis}</div>
+                  <div style={{ fontSize: '0.82rem', color: '#475569' }}>
+                    🌡️ {pogoda.temp_min}°C – {pogoda.temp_max}°C &nbsp;|&nbsp; 💧 Opady: {pogoda.opady} mm
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {liczbaDni > 0 && (
             <div className="modal-summary">

@@ -22,8 +22,7 @@ function App() {
   const location = useLocation();
 
   const activeTab = location.pathname.replace('/', '') || 'strefy';
-  const rola = localStorage.getItem('rola'); // 'User', 'Pracownik', 'Admin'
-  const isAdmin = rola === 'Admin' || rola === 'Pracownik';
+  const isAdmin = localStorage.getItem('rola') === 'Admin' || localStorage.getItem('rola') === 'Pracownik';
 
   // Nawigacja zależna od roli
   const navItems = [
