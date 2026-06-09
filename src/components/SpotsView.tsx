@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { RezerwacjaModal } from './RezerwacjaModal';
+import { RezerwacjaModal } from './ReservationModal';
 
 interface Miejsce {
   miejsceID: number;

@@ -56,11 +56,14 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
     try {
       const url = editID ? `http://localhost:5050/api/Pracownik/edit/${editID}` : 'http://localhost:5050/api/Pracownik/add';
       const method = editID ? 'PUT' : 'POST';
-      const body = editID ? { ...form, pracownikID: editID } : form;
+      // Przy edycji - jeśli hasło puste, nie wysyłamy go (zostaje stare)
+      const bodyData = editID
+        ? { ...form, pracownikID: editID, haslo: form.haslo || undefined }
+        : form;
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(body)
+        body: JSON.stringify(bodyData)
       });
       if (res.ok) { setShowForm(false); setEditID(null); setForm(emptyForm); fetchPracownicy(); }
     } catch (err) { console.error(err); }
@@ -68,7 +71,8 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
   };
 
   const handleEdit = (p: Pracownik) => {
-    setForm({ imie: p.imie, nazwisko: p.nazwisko, stanowisko: p.stanowisko || '', telefon: p.telefon || '', email: p.email || '', login: p.login || '', haslo: p.haslo || '', rola: p.rola || 'Pracownik' });
+    // Przy edycji - nie wczytujemy hasła (pole pozostaje puste)
+    setForm({ imie: p.imie, nazwisko: p.nazwisko, stanowisko: p.stanowisko || '', telefon: p.telefon || '', email: p.email || '', login: p.login || '', haslo: '', rola: p.rola || 'Pracownik' });
     setEditID(p.pracownikID);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });

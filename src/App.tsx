@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import './App.css';
 
-import { StrefyView } from './components/StrefyView';
-import { MiejscaView } from './components/MiejscaView';
-import { KlienciView } from './components/KlienciView';
+import { StrefyView } from './components/ZonesView';
+import { MiejscaView } from './components/SpotsView';
+import { KlienciView } from './components/ClientsView';
 import { LoginView } from './components/LoginView';
-import { MojeRezerwacjeView } from './components/MojeRezerwacjeView';
-import { RejestracjaView } from './components/RejestracjaView';
-import { PracownicyView } from './components/PracownicyView';
-import { RezerwacjeAdminView } from './components/RezerwacjeAdminView';
+import { MojeRezerwacjeView } from './components/MyReservationsView';
+import { RejestracjaView } from './components/RegisterView';
+import { PracownicyView } from './components/EmployeesView';
+import { RezerwacjeAdminView } from './components/ReservationsAdminView';
 
 
 function App() {
@@ -52,7 +52,7 @@ function App() {
     navigate('/strefy');
   };
 
-  const handleLogin = (rola: string) => {
+  const handleLogin = (_rola: string) => {
     setIsLoggedIn(true);
     setUserImie(localStorage.getItem('imie') || '');
     navigate('/strefy');
