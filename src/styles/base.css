@@ -53,17 +53,27 @@
   padding: 8px 16px;
   border-radius: 8px;
   border: none;
-  background: #f1f5f9;
-  color: #1e293b;
+  background: transparent;
+  color: #cbd5e1;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s;
+  transition: background 0.2s, color 0.2s, transform 0.2s;
   font-family: var(--font);
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
-.nav-btn:hover  { background: #e2e8f0; transform: translateY(-1px); }
+.nav-btn:hover  { background: rgba(255,255,255,0.1); color: #f1f5f9; transform: translateY(-1px); }
 .nav-btn.active { background: #2563eb; color: white; }
 
-.btn-gold { background: var(--gold); color: #78350f; }
+.nav-btn-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.btn-gold { background: transparent; color: var(--gold); }
+.btn-gold:hover { background: rgba(245,158,11,0.15); color: var(--gold); }
 .btn-gold.active { background: #d97706; color: white; }
 
 .logout-link {

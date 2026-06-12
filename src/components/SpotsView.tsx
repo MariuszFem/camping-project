@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react';
 import { RezerwacjaModal } from './ReservationModal';
+import { GiCampingTent, GiCaravan } from 'react-icons/gi';
+import { MdOutlineElectricBolt, MdOutlineElectricalServices } from 'react-icons/md';
+import { TbCaravan } from 'react-icons/tb';
 
 interface Miejsce {
   miejsceID: number;
@@ -33,6 +36,14 @@ function Stars({ n }: { n: number }) {
 function ScoreBadge({ score }: { score: number }) {
   const color = score >= 9 ? '#1a7f37' : score >= 8 ? '#2563eb' : '#d97706';
   return <span className="score-badge" style={{ background: color }}>{score.toFixed(1)}</span>;
+}
+
+function TypIcon({ typ }: { typ: string }) {
+  const style = { flexShrink: 0, color: '#64748b' };
+  if (typ === 'Namiot')    return <GiCampingTent size={22} style={style} />;
+  if (typ === 'Kamper')    return <GiCaravan size={22} style={style} />;
+  if (typ === 'Przyczepa') return <TbCaravan size={22} style={style} />;
+  return null;
 }
 
 export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
@@ -69,7 +80,6 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
     try { return JSON.parse(cechy); } catch { return []; }
   };
 
-  const typIcon = (typ: string) => typ === 'Namiot' ? '' : typ === 'Kamper' ? '' : '';
   const typy = ['Wszystkie', 'Namiot', 'Kamper', 'Przyczepa'];
   const minCena = filtered.length > 0 ? Math.min(...filtered.map(m => Number(m.cenaZaDobe))) : 0;
 
@@ -178,7 +188,10 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                 </div>
                 <div className="listing-top">
                   <div>
-                    <h3 className="listing-title">{typIcon(m.typ)} Miejsce {m.numerMiejsca}</h3>
+                    <h3 className="listing-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <TypIcon typ={m.typ} />
+                      Miejsce {m.numerMiejsca}
+                    </h3>
                     <Stars n={m.gwiazdki} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -195,8 +208,11 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                   ))}
                 </ul>
                 <div className="listing-meta">
-                  <span> {m.wymiary}</span>
-                  <span>{m.prad ? ' Prąd w cenie' : '— Bez prądu'}</span>
+                  <span>{m.wymiary}</span>
+                  <span>{m.prad
+                    ? <><MdOutlineElectricBolt size={14} style={{ verticalAlign: 'middle', marginRight: 3, color: '#f59e0b' }} />Prąd w cenie</>
+                    : <><MdOutlineElectricalServices size={14} style={{ verticalAlign: 'middle', marginRight: 3, color: '#94a3b8' }} />Bez prądu</>
+                  }</span>
                 </div>
               </div>
 

@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
 import { RezerwacjaModal } from './ReservationModal';
+import {
+  MdOutlineWifi, MdOutlineLocalParking, MdOutlinePool,
+  MdOutlineShower, MdOutlineElectricBolt, MdOutlinePets,
+  MdOutlinePlayCircle, MdOutlineRestaurant, MdOutlineLocalFireDepartment,
+  MdPeopleAlt, MdEventAvailable, MdEventBusy,
+  MdOutlineForest, MdOutlineWater, MdOutlineLocationCity,
+  MdOutlineStars, MdOutlineFamilyRestroom, MdOutlineNightsStay
+} from 'react-icons/md';
 
 interface Strefa {
   strefaID: number;
@@ -44,6 +52,47 @@ function ScoreBadge({ score }: { score: number }) {
       {score.toFixed(1)}
     </span>
   );
+}
+
+function CechaIcon({ cecha }: { cecha: string }) {
+  const lower = cecha.toLowerCase();
+  if (lower.includes('wifi') || lower.includes('wi-fi') || lower.includes('internet'))
+    return <MdOutlineWifi size={15} style={{ flexShrink: 0 }} />;
+  if (lower.includes('parking'))
+    return <MdOutlineLocalParking size={15} style={{ flexShrink: 0 }} />;
+  if (lower.includes('basen') || lower.includes('pool'))
+    return <MdOutlinePool size={15} style={{ flexShrink: 0 }} />;
+  if (lower.includes('prysznic') || lower.includes('sanitarny') || lower.includes('łazienka'))
+    return <MdOutlineShower size={15} style={{ flexShrink: 0 }} />;
+  if (lower.includes('prąd') || lower.includes('elektryczn'))
+    return <MdOutlineElectricBolt size={15} style={{ flexShrink: 0 }} />;
+  if (lower.includes('zwierz') || lower.includes('pies') || lower.includes('kot'))
+    return <MdOutlinePets size={15} style={{ flexShrink: 0 }} />;
+  if (lower.includes('plac') || lower.includes('dzieci') || lower.includes('play'))
+    return <MdOutlinePlayCircle size={15} style={{ flexShrink: 0 }} />;
+  if (lower.includes('restauracj') || lower.includes('jedzenie') || lower.includes('bar'))
+    return <MdOutlineRestaurant size={15} style={{ flexShrink: 0 }} />;
+  if (lower.includes('ognisko') || lower.includes('grill'))
+    return <MdOutlineLocalFireDepartment size={15} style={{ flexShrink: 0 }} />;
+  return <span className="feat-dot" style={{ flexShrink: 0 }}>✓</span>;
+}
+
+function StrefaIcon({ nazwa }: { nazwa: string }) {
+  const lower = nazwa.toLowerCase();
+  const style = { flexShrink: 0, color: '#64748b' };
+  if (lower.includes('leśn') || lower.includes('las'))
+    return <MdOutlineForest size={22} style={style} />;
+  if (lower.includes('jezior') || lower.includes('wod') || lower.includes('plaż'))
+    return <MdOutlineWater size={22} style={style} />;
+  if (lower.includes('central') || lower.includes('główn'))
+    return <MdOutlineLocationCity size={22} style={style} />;
+  if (lower.includes('premium') || lower.includes('vip') || lower.includes('lux'))
+    return <MdOutlineStars size={22} style={style} />;
+  if (lower.includes('rodzin') || lower.includes('dzieci'))
+    return <MdOutlineFamilyRestroom size={22} style={style} />;
+  if (lower.includes('cicha') || lower.includes('spokojn') || lower.includes('nocna'))
+    return <MdOutlineNightsStay size={22} style={style} />;
+  return <MdOutlineForest size={22} style={style} />;
 }
 
 export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
@@ -231,7 +280,10 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
 
                 <div className="listing-top">
                   <div>
-                    <h3 className="listing-title">{s.nazwaStrefy}</h3>
+                    <h3 className="listing-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <StrefaIcon nazwa={s.nazwaStrefy} />
+                      {s.nazwaStrefy}
+                    </h3>
                     <Stars n={s.gwiazdki} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -245,13 +297,16 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                 <p className="listing-desc">{s.opis}</p>
                 <ul className="listing-features">
                   {parseCechy(s.cechy).map((c, i) => (
-                    <li key={i}><span className="feat-dot">✓</span>{c}</li>
+                    <li key={i}><CechaIcon cecha={c} />{c}</li>
                   ))}
                 </ul>
                 <div className="listing-meta">
-                  <span> {s.miejscaLacznie} miejsc łącznie</span>
+                  <span><MdPeopleAlt size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />{s.miejscaLacznie} miejsc łącznie</span>
                   <span style={{ color: s.wolneMiejsca === 0 ? '#e74c3c' : '#27ae60' }}>
-                    ● {s.wolneMiejsca === 0 ? 'Brak wolnych' : `${s.wolneMiejsca} wolnych`}
+                    {s.wolneMiejsca === 0
+                      ? <><MdEventBusy size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />Brak wolnych</>
+                      : <><MdEventAvailable size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />{s.wolneMiejsca} wolnych</>
+                    }
                   </span>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 ﻿/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import { MdOutlineTerrain, MdOutlineCabin, MdPeople, MdBadge, MdEventNote } from 'react-icons/md';
 import './App.css';
 
 import { StrefyView } from './components/ZonesView';
@@ -12,24 +13,29 @@ import { RejestracjaView } from './components/RegisterView';
 import { PracownicyView } from './components/EmployeesView';
 import { RezerwacjeAdminView } from './components/ReservationsAdminView';
 
-
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
+  
+  // PRZYWRÓCONO: Aplikacja sprawdza, czy token z backendu istnieje w localStorage
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
+  
+  // PRZYWRÓCONO: Aplikacja pobiera prawdziwe imię zalogowanego użytkownika
   const [userImie, setUserImie] = useState<string>(localStorage.getItem('imie') || '');
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const activeTab = location.pathname.replace('/', '') || 'strefy';
+  
+  // PRZYWRÓCONO: Sprawdzanie prawdziwej roli na podstawie danych z backendu
   const isAdmin = localStorage.getItem('rola') === 'Admin' || localStorage.getItem('rola') === 'Pracownik';
 
   // Nawigacja zależna od roli
   const navItems = [
-    { key: 'strefy',   label: 'Strefy',    always: true },
-    { key: 'miejsca',  label: 'Miejsca',   always: true },
-    { key: 'klienci',  label: 'Klienci',   admin: true },
-    { key: 'pracownicy', label: 'Pracownicy', admin: true },
+    { key: 'strefy',     label: 'Strefy',      icon: <MdOutlineTerrain size={18} />, always: true },
+    { key: 'miejsca',    label: 'Miejsca',     icon: <MdOutlineCabin size={18} />,   always: true },
+    { key: 'klienci',    label: 'Klienci',     icon: <MdPeople size={18} />,         admin: true },
+    { key: 'pracownicy', label: 'Pracownicy',  icon: <MdBadge size={18} />,          admin: true },
   ].filter(item => item.always || (item.admin && isAdmin));
 
   const handleNavClick = (path: string) => {
@@ -58,7 +64,7 @@ function App() {
     navigate('/strefy');
   };
 
-  const isLightBg = activeTab === 'strefy' || activeTab === 'miejsca';
+  const isLightBg = ['strefy', 'miejsca', 'klienci', 'pracownicy', 'rezerwacje', 'moje-rezerwacje'].includes(activeTab);
   const hideFooter = ['klienci', 'pracownicy', 'rezerwacje', 'moje-rezerwacje', 'login', 'rejestracja'].includes(activeTab);
 
   return (
@@ -85,6 +91,7 @@ function App() {
               className={`nav-btn ${activeTab === item.key ? 'active' : ''}`}
               onClick={() => handleNavClick(item.key)}
             >
+              <span className="nav-btn-icon">{item.icon}</span>
               {item.label}
             </button>
           ))}
@@ -93,6 +100,7 @@ function App() {
               className={`nav-btn btn-gold ${activeTab === (isAdmin ? 'rezerwacje' : 'moje-rezerwacje') ? 'active' : ''}`}
               onClick={() => handleNavClick(isAdmin ? 'rezerwacje' : 'moje-rezerwacje')}
             >
+              <span className="nav-btn-icon"><MdEventNote size={18} /></span>
               {isAdmin ? 'Rezerwacje' : 'Moje rezerwacje'}
             </button>
           )}
