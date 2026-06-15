@@ -1,11 +1,8 @@
-
-
 .admin-page {
   max-width: 1000px;
   margin: 0 auto;
 }
 
-/* --- Header --- */
 .admin-page-header {
   display: flex;
   justify-content: space-between;
@@ -30,7 +27,6 @@
   margin: 0;
 }
 
-/* --- Przycisk dodaj --- */
 .admin-add-btn {
   background: #2563eb;
   color: white;
@@ -49,7 +45,6 @@
 }
 .admin-add-btn:hover { background: #1d4ed8; transform: translateY(-1px); }
 
-/* --- Formularz --- */
 .admin-form-card {
   background: white;
   border: 1px solid #e2e8f0;
@@ -120,7 +115,6 @@
 .admin-save-btn:hover:not(:disabled) { background: #1d4ed8; }
 .admin-save-btn:disabled { background: #94a3b8; cursor: not-allowed; }
 
-/* --- Chipy / statystyki --- */
 .admin-chips {
   display: flex;
   gap: 8px;
@@ -148,7 +142,6 @@
 .admin-chip--green  { border-color: #bbf7d0; background: #f0fdf4; color: #15803d; }
 .admin-chip--green b { color: #15803d; }
 
-/* --- Lista wierszy --- */
 .admin-list {
   display: flex;
   flex-direction: column;
@@ -267,8 +260,6 @@
   text-align: center;
   color: #94a3b8;
 }
-
-/* ===== REZERWACJE ===== */
 
 .rez-row {
   flex-wrap: wrap;

@@ -1,4 +1,6 @@
+
 import { useState } from 'react';
+import api from '../api/axiosInstance';
 
 interface Props {
   miejsceID: number;
@@ -44,18 +46,16 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
     setPogodaLoading(true);
     setPogoda(null);
     try {
-      const res = await fetch(`http://localhost:5050/api/Pogoda?data=${data}`);
-      if (res.ok) {
-        const json = await res.json();
-        const info = weatherCodeToInfo(json.weatherCode ?? 0);
-        setPogoda({
-          temp_max: json.tempMax ?? 0,
-          temp_min: json.tempMin ?? 0,
-          opady: json.opady ?? 0,
-          ...info
-        });
-      }
-    } catch { /* brak pogody - nie blokuj */ }
+      const res = await api.get(`/Pogoda?data=${data}`);
+      const json = res.data;
+      const info = weatherCodeToInfo(json.weatherCode ?? 0);
+      setPogoda({
+        temp_max: json.tempMax ?? 0,
+        temp_min: json.tempMin ?? 0,
+        opady: json.opady ?? 0,
+        ...info,
+      });
+    } catch {}
     finally { setPogodaLoading(false); }
   };
 
@@ -78,29 +78,22 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
 
     setLoading(true);
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5050/api/Rezerwacje/add', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({
-          klientID: klientID || 1,
-          miejsceID,
-          dataRezerwacji: new Date().toISOString(),
-          dataPrzyjazdu: new Date(form.dataPrzyjazdu).toISOString(),
-          dataWyjazdu: new Date(form.dataWyjazdu).toISOString(),
-          liczbaOsob: form.liczbaOsob,
-          status: 'Nowa'
-        })
+      await api.post('/Rezerwacje/add', {
+        klientID: klientID || 1,
+        miejsceID,
+        dataRezerwacji: new Date().toISOString(),
+        dataPrzyjazdu: new Date(form.dataPrzyjazdu).toISOString(),
+        dataWyjazdu: new Date(form.dataWyjazdu).toISOString(),
+        liczbaOsob: form.liczbaOsob,
+        status: 'Nowa',
       });
-
-      if (response.ok) {
-        onSuccess();
-      } else {
-        const data = await response.json();
-        setError(data.message || 'Błąd podczas składania rezerwacji.');
-      }
-    } catch {
-      setError('Brak połączenia z serwerem.');
+      onSuccess();
+    } catch (err: unknown) {
+      const msg =
+        err && typeof err === 'object' && 'response' in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : undefined;
+      setError(msg || 'Błąd podczas składania rezerwacji.');
     } finally {
       setLoading(false);
     }

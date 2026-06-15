@@ -1,8 +1,16 @@
+/**
+ * SpotsView.tsx
+ * -------------
+ * CO ZOSTAŁO ZMIENIONE:
+ * fetch() zastąpiony przez Axios (api.get('/Miejsca/list')).
+ * Token JWT dołączany automatycznie przez interceptor w axiosInstance.
+ */
 import { useState, useEffect } from 'react';
 import { RezerwacjaModal } from './ReservationModal';
 import { GiCampingTent, GiCaravan } from 'react-icons/gi';
 import { MdOutlineElectricBolt, MdOutlineElectricalServices } from 'react-icons/md';
 import { TbCaravan } from 'react-icons/tb';
+import api from '../api/axiosInstance';
 
 interface Miejsce {
   miejsceID: number;
@@ -57,9 +65,9 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
   const [successMsg, setSuccessMsg] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:5050/api/Miejsca/list')
-      .then(r => r.json())
-      .then(data => setMiejsca(data))
+    api
+      .get('/Miejsca/list')
+      .then(res => setMiejsca(res.data))
       .catch(err => console.error('Błąd pobierania miejsc:', err))
       .finally(() => setLoading(false));
   }, []);
@@ -163,7 +171,7 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
         </div>
 
         <div className="listing-header">
-          <h2 className="section-title" style={{ margin: 0 }}>Miejsca campingowe</h2>
+          <h2 className="section-title" style={{ margin: 0 }}></h2>
           <span className="listing-count">{filtered.length} wyników</span>
         </div>
 

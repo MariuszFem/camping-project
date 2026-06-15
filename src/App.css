@@ -7,7 +7,7 @@
 @import './styles/footer.css';
 @import './styles/search.css';
 
-/* ===== MODAL ===== */
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -174,7 +174,6 @@
 .modal-submit-btn:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-1px); }
 .modal-submit-btn:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; transform: none; }
 
-/* ===== SUCCESS TOAST ===== */
 .success-toast {
   position: fixed;
   top: 80px;

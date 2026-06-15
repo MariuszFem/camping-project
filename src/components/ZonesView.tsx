@@ -1,5 +1,8 @@
+
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { RezerwacjaModal } from './ReservationModal';
+import api from '../api/axiosInstance';
 import {
   MdOutlineWifi, MdOutlineLocalParking, MdOutlinePool,
   MdOutlineShower, MdOutlineElectricBolt, MdOutlinePets,
@@ -107,10 +110,12 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
   const [modalMiejsce, setModalMiejsce] = useState<MiejsceWStrefie | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    fetch('http://localhost:5050/api/Strefy/list')
-      .then(r => r.json())
-      .then(data => setStrefy(data))
+    api
+      .get<Strefa[]>('/Strefy/list')
+      .then(res => setStrefy(res.data))
       .catch(err => console.error('Błąd pobierania stref:', err))
       .finally(() => setLoading(false));
   }, []);
@@ -131,11 +136,8 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
     setWybranaStrefa(strefa);
     setLoadingMiejsca(true);
     try {
-      const res = await fetch('http://localhost:5050/api/Miejsca/list');
-      const data = await res.json();
-      const wolne = data.filter((m: MiejsceWStrefie & { strefaID: number }) =>
-        m.strefaID === strefa.strefaID && m.status === 'Wolne'
-      );
+      const res = await api.get<(MiejsceWStrefie & { strefaID: number })[]>('/Miejsca/list');
+      const wolne = res.data.filter(m => m.strefaID === strefa.strefaID && m.status === 'Wolne');
       setMiejscaStrefy(wolne);
     } catch { setMiejscaStrefy([]); }
     finally { setLoadingMiejsca(false); }
@@ -255,7 +257,7 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
         </div>
 
         <div className="listing-header">
-          <h2 className="section-title" style={{ margin: 0 }}>Strefy campingowe</h2>
+          <h2 className="section-title" style={{ margin: 0 }}></h2>
           <span className="listing-count">{filtered.length} wyników</span>
         </div>
 
@@ -320,6 +322,12 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                   onClick={() => s.status === 'Dostępna' && handleRezerwujStrefe(s)}
                 >
                   {s.status === 'Dostępna' ? 'Rezerwuj' : 'Niedostępna'}
+                </button>
+                <button
+                  onClick={() => navigate(`/strefy/${s.strefaID}`)}
+                  style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontSize: '0.82rem', fontFamily: 'inherit', marginTop: 4, textDecoration: 'underline' }}
+                >
+                  Szczegóły →
                 </button>
                 <div className="listing-avail">
                   {s.wolneMiejsca > 0 ? ` ${s.wolneMiejsca} dostępnych` : '✗ Brak miejsc'}

@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import {
   MdSearch, MdPersonAdd, MdClose, MdPeople,
   MdEmail, MdPhone, MdCalendarMonth, MdBookmarks,
   MdPersonOff, MdVerifiedUser
 } from 'react-icons/md';
+import api from '../api/axiosInstance';
 
 interface Klient {
   klientID: number;
@@ -29,21 +31,15 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
   const [search, setSearch] = useState('');
   const [newClient, setNewClient] = useState<NewKlient>({ imie: '', nazwisko: '', email: '', telefon: '' });
 
-  useEffect(() => { fetchKlienci(); }, []);
-
-  const fetchKlienci = () => {
-    const token = localStorage.getItem('token');
-    fetch('http://localhost:5050/api/Klienci/list', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(r => {
-        if (!r.ok) throw new Error(`${r.status}`);
-        return r.json();
-      })
-      .then(data => setKlienci(Array.isArray(data) ? data : []))
+  const fetchKlienci = useCallback(() => {
+    api
+      .get('/Klienci/list')
+      .then(res => setKlienci(Array.isArray(res.data) ? res.data : []))
       .catch(err => console.error('Błąd pobierania klientów:', err))
       .finally(() => setLoading(false));
-  };
+  }, []);
+
+  useEffect(() => { fetchKlienci(); }, [fetchKlienci]);
 
   const activeSearch = searchTerm || search;
   const filtered = klienci.filter(k =>
@@ -53,12 +49,8 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5050/api/Klienci/create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newClient)
-      });
-      if (response.ok) {
+      const res = await api.post('/Klienci/create', newClient);
+      if (res.status < 300) {
         setNewClient({ imie: '', nazwisko: '', email: '', telefon: '' });
         setShowForm(false);
         fetchKlienci();

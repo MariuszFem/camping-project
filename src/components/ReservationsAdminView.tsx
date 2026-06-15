@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import {
   MdEventNote, MdCalendarMonth, MdPeople, MdLocationOn,
   MdCheckCircle, MdCancel, MdDoneAll, MdHourglassEmpty,
   MdFilterList
 } from 'react-icons/md';
+import api from '../api/axiosInstance';
 
 interface Rezerwacja {
   rezerwacjaID: number;
@@ -29,31 +31,26 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
   const [processingID, setProcessingID] = useState<number | null>(null);
   const [filterStatus, setFilterStatus] = useState('Wszystkie');
 
-  const token = localStorage.getItem('token');
-
-  const fetchRezerwacje = () => {
-    fetch('http://localhost:5050/api/Rezerwacje/list', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(r => r.json())
-      .then(d => setRezerwacje(Array.isArray(d) ? d : []))
+  const fetchRezerwacje = useCallback(() => {
+    api
+      .get('/Rezerwacje/list')
+      .then(res => setRezerwacje(Array.isArray(res.data) ? res.data : []))
       .catch(console.error)
       .finally(() => setLoading(false));
-  };
+  }, []);
 
-  useEffect(() => { fetchRezerwacje(); }, []);
+  useEffect(() => { fetchRezerwacje(); }, [fetchRezerwacje]);
 
   const changeStatus = async (id: number, nowyStatus: string) => {
     setProcessingID(id);
     try {
-      const res = await fetch(`http://localhost:5050/api/Rezerwacje/zmien-status/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ status: nowyStatus })
-      });
-      if (res.ok) fetchRezerwacje();
-    } catch (err) { console.error(err); }
-    finally { setProcessingID(null); }
+      await api.put(`/Rezerwacje/zmien-status/${id}`, { status: nowyStatus });
+      fetchRezerwacje();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setProcessingID(null);
+    }
   };
 
   let filtered = rezerwacje.filter(r =>
@@ -70,7 +67,6 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
   return (
     <div className="admin-page">
 
-      {/* Header */}
       <div className="admin-page-header">
         <div>
           <h2 className="admin-page-title">
@@ -80,8 +76,6 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
           <p className="admin-page-subtitle">{rezerwacje.length} rezerwacji łącznie</p>
         </div>
       </div>
-
-      {/* Filtry statusów */}
       <div className="admin-chips" style={{ marginBottom: 20 }}>
         <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: 4 }}>
           <MdFilterList size={15} />Filtruj:
@@ -120,7 +114,6 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                 className="admin-row rez-row"
                 style={{ borderLeft: `4px solid ${cfg.color}` }}
               >
-                {/* Lewa część – info */}
                 <div className="rez-info">
                   <div className="rez-top">
                     <span className="rez-id">#{r.rezerwacjaID}</span>
@@ -142,8 +135,6 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                     </span>
                   </div>
                 </div>
-
-                {/* Prawa część – status + akcje */}
                 <div className="rez-right">
                   <span className="rez-status-badge" style={{ background: cfg.color }}>
                     {cfg.icon}

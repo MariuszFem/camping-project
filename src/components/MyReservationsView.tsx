@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import api from '../api/axiosInstance';
 
 interface Rezerwacja {
   rezerwacjaID: number;
@@ -23,29 +24,23 @@ export function MojeRezerwacjeView() {
   const [anulowanieID, setAnulowanieID] = useState<number | null>(null);
 
   const klientID = localStorage.getItem('klientID');
-  const token = localStorage.getItem('token');
 
-  const fetchRezerwacje = () => {
+  const fetchRezerwacje = useCallback(() => {
     if (!klientID) { setLoading(false); return; }
-    fetch(`http://localhost:5050/api/Rezerwacje/moje/${klientID}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(r => r.json())
-      .then(data => setRezerwacje(data))
+    api
+      .get(`/Rezerwacje/moje/${klientID}`)
+      .then(res => setRezerwacje(res.data))
       .catch(err => console.error(err))
       .finally(() => setLoading(false));
-  };
+  }, [klientID]);
 
-  useEffect(() => { fetchRezerwacje(); }, []);
+  useEffect(() => { fetchRezerwacje(); }, [fetchRezerwacje]);
 
   const handleAnuluj = async (id: number) => {
     setAnulowanieID(id);
     try {
-      const response = await fetch(`http://localhost:5050/api/Rezerwacje/anuluj/${id}`, {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) fetchRezerwacje();
+      await api.put(`/Rezerwacje/anuluj/${id}`);
+      fetchRezerwacje();
     } catch (err) {
       console.error(err);
     } finally {
@@ -66,7 +61,7 @@ export function MojeRezerwacjeView() {
 
       {rezerwacje.length === 0 ? (
         <div style={{ background: '#1e293b', borderRadius: 12, padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>📋</div>
+          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}></div>
           <p style={{ fontSize: '1.1rem' }}>Nie masz jeszcze żadnych rezerwacji.</p>
           <p style={{ fontSize: '0.9rem' }}>Przejdź do zakładki Miejsca i zarezerwuj swoje miejsce.</p>
         </div>

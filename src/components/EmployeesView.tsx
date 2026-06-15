@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+
+import { useState, useEffect, useCallback } from 'react';
 import {
   MdBadge, MdPersonAdd, MdClose, MdEdit, MdDelete,
   MdEmail, MdPhone, MdWork, MdKey, MdPeople,
   MdAdminPanelSettings, MdManageAccounts
 } from 'react-icons/md';
+import api from '../api/axiosInstance';
 
 interface Pracownik {
   pracownikID: number;
@@ -30,21 +32,18 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
-  const token = localStorage.getItem('token');
   const rola = localStorage.getItem('rola');
   const isAdmin = rola === 'Admin';
 
-  const fetchPracownicy = () => {
-    fetch('http://localhost:5050/api/Pracownik/list', {
-      headers: { 'Authorization': `Bearer ${token}` }
-    })
-      .then(r => r.json())
-      .then(d => setPracownicy(Array.isArray(d) ? d : []))
+  const fetchPracownicy = useCallback(() => {
+    api
+      .get('/Pracownik/list')
+      .then(res => setPracownicy(Array.isArray(res.data) ? res.data : []))
       .catch(console.error)
       .finally(() => setLoading(false));
-  };
+  }, []);
 
-  useEffect(() => { fetchPracownicy(); }, []);
+  useEffect(() => { fetchPracownicy(); }, [fetchPracownicy]);
 
   const filtered = pracownicy.filter(p =>
     `${p.imie} ${p.nazwisko} ${p.stanowisko} ${p.email} ${p.rola}`.toLowerCase().includes(searchTerm.toLowerCase())
@@ -54,19 +53,24 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
     e.preventDefault();
     setSaving(true);
     try {
-      const url = editID ? `http://localhost:5050/api/Pracownik/edit/${editID}` : 'http://localhost:5050/api/Pracownik/add';
-      const method = editID ? 'PUT' : 'POST';
-      const bodyData = editID
-        ? { ...form, pracownikID: editID, haslo: form.haslo || undefined }
-        : form;
-      const res = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify(bodyData)
-      });
-      if (res.ok) { setShowForm(false); setEditID(null); setForm(emptyForm); fetchPracownicy(); }
-    } catch (err) { console.error(err); }
-    finally { setSaving(false); }
+      if (editID) {
+        await api.put(`/Pracownik/edit/${editID}`, {
+          ...form,
+          pracownikID: editID,
+          haslo: form.haslo || undefined,
+        });
+      } else {
+        await api.post('/Pracownik/add', form);
+      }
+      setShowForm(false);
+      setEditID(null);
+      setForm(emptyForm);
+      fetchPracownicy();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleEdit = (p: Pracownik) => {
@@ -78,7 +82,7 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Usunąć tego pracownika?')) return;
-    await fetch(`http://localhost:5050/api/Pracownik/delete/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+    await api.delete(`/Pracownik/delete/${id}`);
     fetchPracownicy();
   };
 
