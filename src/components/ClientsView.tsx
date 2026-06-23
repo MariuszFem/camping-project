@@ -1,9 +1,15 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import {
-  MdSearch, MdPersonAdd, MdClose, MdPeople,
-  MdEmail, MdPhone, MdCalendarMonth, MdBookmarks,
-  MdPersonOff, MdVerifiedUser
+  MdSearch,
+  MdPersonAdd,
+  MdClose,
+  MdPeople,
+  MdEmail,
+  MdPhone,
+  MdCalendarMonth,
+  MdBookmarks,
+  MdPersonOff,
+  MdVerifiedUser,
 } from 'react-icons/md';
 import api from '../api/axiosInstance';
 
@@ -29,7 +35,12 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [search, setSearch] = useState('');
-  const [newClient, setNewClient] = useState<NewKlient>({ imie: '', nazwisko: '', email: '', telefon: '' });
+  const [newClient, setNewClient] = useState<NewKlient>({
+    imie: '',
+    nazwisko: '',
+    email: '',
+    telefon: '',
+  });
 
   const fetchKlienci = useCallback(() => {
     api
@@ -39,7 +50,9 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { fetchKlienci(); }, [fetchKlienci]);
+  useEffect(() => {
+    fetchKlienci();
+  }, [fetchKlienci]);
 
   const activeSearch = searchTerm || search;
   const filtered = klienci.filter(k =>
@@ -61,13 +74,13 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
   };
 
   const initials = (imie: string, nazwisko: string) => `${imie[0]}${nazwisko[0]}`.toUpperCase();
-  const avatarColor = (id: number) => ['#16a34a', '#0891b2', '#7c3aed', '#db2777', '#d97706'][id % 5];
+  const avatarColor = (id: number) =>
+    ['#16a34a', '#0891b2', '#7c3aed', '#db2777', '#d97706'][id % 5];
 
   if (loading) return <div className="loader">Pobieranie klientów...</div>;
 
   return (
     <div className="admin-page">
-
       {/* Header */}
       <div className="admin-page-header">
         <div>
@@ -77,10 +90,12 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
           </h2>
           <p className="admin-page-subtitle">{klienci.length} zarejestrowanych klientów</p>
         </div>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="admin-header-actions">
           {/* Wyszukiwarka */}
           <div className="klienci-search">
-            <span className="klienci-search-icon"><MdSearch size={18} /></span>
+            <span className="klienci-search-icon">
+              <MdSearch size={18} />
+            </span>
             <input
               type="text"
               placeholder="Szukaj po imieniu, nazwisku lub emailu..."
@@ -89,10 +104,17 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
             />
           </div>
           <button className="admin-add-btn" onClick={() => setShowForm(!showForm)}>
-            {showForm
-              ? <><MdClose size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />Anuluj</>
-              : <><MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />Dodaj klienta</>
-            }
+            {showForm ? (
+              <>
+                <MdClose size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                Anuluj
+              </>
+            ) : (
+              <>
+                <MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                Dodaj klienta
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -108,26 +130,42 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
             <div className="admin-form-grid">
               <div className="admin-form-field">
                 <label>Imię *</label>
-                <input placeholder="Imię" required value={newClient.imie}
-                  onChange={e => setNewClient({ ...newClient, imie: e.target.value })} />
+                <input
+                  placeholder="Imię"
+                  required
+                  value={newClient.imie}
+                  onChange={e => setNewClient({ ...newClient, imie: e.target.value })}
+                />
               </div>
               <div className="admin-form-field">
                 <label>Nazwisko *</label>
-                <input placeholder="Nazwisko" required value={newClient.nazwisko}
-                  onChange={e => setNewClient({ ...newClient, nazwisko: e.target.value })} />
+                <input
+                  placeholder="Nazwisko"
+                  required
+                  value={newClient.nazwisko}
+                  onChange={e => setNewClient({ ...newClient, nazwisko: e.target.value })}
+                />
               </div>
               <div className="admin-form-field">
                 <label>Email</label>
-                <input placeholder="Email" value={newClient.email}
-                  onChange={e => setNewClient({ ...newClient, email: e.target.value })} />
+                <input
+                  placeholder="Email"
+                  value={newClient.email}
+                  onChange={e => setNewClient({ ...newClient, email: e.target.value })}
+                />
               </div>
               <div className="admin-form-field">
                 <label>Telefon</label>
-                <input placeholder="Telefon" value={newClient.telefon}
-                  onChange={e => setNewClient({ ...newClient, telefon: e.target.value })} />
+                <input
+                  placeholder="Telefon"
+                  value={newClient.telefon}
+                  onChange={e => setNewClient({ ...newClient, telefon: e.target.value })}
+                />
               </div>
             </div>
-            <button type="submit" className="admin-save-btn">Zapisz</button>
+            <button type="submit" className="admin-save-btn">
+              Zapisz
+            </button>
           </form>
         </div>
       )}
@@ -146,7 +184,11 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
           <MdPersonOff size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
           Nowi: <b>{klienci.filter(k => k.rezerwacje === 0).length}</b>
         </span>
-        {activeSearch && <span className="admin-chip">Wyniki: <b>{filtered.length}</b></span>}
+        {activeSearch && (
+          <span className="admin-chip">
+            Wyniki: <b>{filtered.length}</b>
+          </span>
+        )}
       </div>
 
       {/* Lista */}
@@ -158,22 +200,33 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
             </div>
             <div className="admin-info">
               <div className="admin-name-row">
-                <span className="admin-name">{k.imie} {k.nazwisko}</span>
-                <span className={`admin-role-badge ${k.rezerwacje > 0 ? 'badge-admin' : 'badge-worker'}`}
-                  style={k.rezerwacje > 0
-                    ? { background: '#f0fdf4', color: '#15803d', borderColor: '#bbf7d0' }
-                    : { background: '#f8fafc', color: '#94a3b8', borderColor: '#e2e8f0' }
-                  }>
+                <span className="admin-name">
+                  {k.imie} {k.nazwisko}
+                </span>
+                <span
+                  className={`admin-role-badge ${k.rezerwacje > 0 ? 'badge-admin' : 'badge-worker'}`}
+                  style={
+                    k.rezerwacje > 0
+                      ? { background: '#f0fdf4', color: '#15803d', borderColor: '#bbf7d0' }
+                      : { background: '#f8fafc', color: '#94a3b8', borderColor: '#e2e8f0' }
+                  }
+                >
                   <MdBookmarks size={11} style={{ verticalAlign: 'middle', marginRight: 3 }} />
                   {k.rezerwacje} {k.rezerwacje === 1 ? 'rezerwacja' : 'rezerwacji'}
                 </span>
               </div>
               <div className="admin-meta">
                 {k.email && (
-                  <span><MdEmail size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />{k.email}</span>
+                  <span>
+                    <MdEmail size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    {k.email}
+                  </span>
                 )}
                 {k.telefon && (
-                  <span><MdPhone size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />{k.telefon}</span>
+                  <span>
+                    <MdPhone size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    {k.telefon}
+                  </span>
                 )}
                 <span>
                   <MdCalendarMonth size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
@@ -187,7 +240,6 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
           <div className="admin-empty">Brak wyników dla „{activeSearch}"</div>
         )}
       </div>
-
     </div>
   );
 }

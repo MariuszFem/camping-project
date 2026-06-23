@@ -1,15 +1,26 @@
-
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RezerwacjaModal } from './ReservationModal';
 import api from '../api/axiosInstance';
 import {
-  MdOutlineWifi, MdOutlineLocalParking, MdOutlinePool,
-  MdOutlineShower, MdOutlineElectricBolt, MdOutlinePets,
-  MdOutlinePlayCircle, MdOutlineRestaurant, MdOutlineLocalFireDepartment,
-  MdPeopleAlt, MdEventAvailable, MdEventBusy,
-  MdOutlineForest, MdOutlineWater, MdOutlineLocationCity,
-  MdOutlineStars, MdOutlineFamilyRestroom, MdOutlineNightsStay
+  MdOutlineWifi,
+  MdOutlineLocalParking,
+  MdOutlinePool,
+  MdOutlineShower,
+  MdOutlineElectricBolt,
+  MdOutlinePets,
+  MdOutlinePlayCircle,
+  MdOutlineRestaurant,
+  MdOutlineLocalFireDepartment,
+  MdPeopleAlt,
+  MdEventAvailable,
+  MdEventBusy,
+  MdOutlineForest,
+  MdOutlineWater,
+  MdOutlineLocationCity,
+  MdOutlineStars,
+  MdOutlineFamilyRestroom,
+  MdOutlineNightsStay,
 } from 'react-icons/md';
 
 interface Strefa {
@@ -41,8 +52,10 @@ interface MiejsceWStrefie {
 function Stars({ n }: { n: number }) {
   return (
     <span className="stars">
-      {[1,2,3,4,5].map(i => (
-        <span key={i} style={{ color: i <= n ? '#f59e0b' : '#ddd' }}>★</span>
+      {[1, 2, 3, 4, 5].map(i => (
+        <span key={i} style={{ color: i <= n ? '#f59e0b' : '#ddd' }}>
+          ★
+        </span>
       ))}
     </span>
   );
@@ -77,7 +90,11 @@ function CechaIcon({ cecha }: { cecha: string }) {
     return <MdOutlineRestaurant size={15} style={{ flexShrink: 0 }} />;
   if (lower.includes('ognisko') || lower.includes('grill'))
     return <MdOutlineLocalFireDepartment size={15} style={{ flexShrink: 0 }} />;
-  return <span className="feat-dot" style={{ flexShrink: 0 }}>✓</span>;
+  return (
+    <span className="feat-dot" style={{ flexShrink: 0 }}>
+      ✓
+    </span>
+  );
 }
 
 function StrefaIcon({ nazwa }: { nazwa: string }) {
@@ -102,8 +119,8 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
   const [strefy, setStrefy] = useState<Strefa[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState('Wszystkie');
-  const [sortBy, setSortBy]             = useState('domyslnie');
-  const [ulubione, setUlubione]         = useState<number[]>([]);
+  const [sortBy, setSortBy] = useState('domyslnie');
+  const [ulubione, setUlubione] = useState<number[]>([]);
   const [wybranaStrefa, setWybranaStrefa] = useState<Strefa | null>(null);
   const [miejscaStrefy, setMiejscaStrefy] = useState<MiejsceWStrefie[]>([]);
   const [loadingMiejsca, setLoadingMiejsca] = useState(false);
@@ -124,13 +141,16 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
     `${s.nazwaStrefy} ${s.opis}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
   if (statusFilter !== 'Wszystkie') filtered = filtered.filter(s => s.status === statusFilter);
-  if (sortBy === 'cena-asc')   filtered = [...filtered].sort((a,b) => Number(a.cenaOd) - Number(b.cenaOd));
-  if (sortBy === 'cena-desc')  filtered = [...filtered].sort((a,b) => Number(b.cenaOd) - Number(a.cenaOd));
-  if (sortBy === 'ocena')      filtered = [...filtered].sort((a,b) => b.ocena - a.ocena);
-  if (sortBy === 'miejsca')    filtered = [...filtered].sort((a,b) => b.wolneMiejsca - a.wolneMiejsca);
+  if (sortBy === 'cena-asc')
+    filtered = [...filtered].sort((a, b) => Number(a.cenaOd) - Number(b.cenaOd));
+  if (sortBy === 'cena-desc')
+    filtered = [...filtered].sort((a, b) => Number(b.cenaOd) - Number(a.cenaOd));
+  if (sortBy === 'ocena') filtered = [...filtered].sort((a, b) => b.ocena - a.ocena);
+  if (sortBy === 'miejsca')
+    filtered = [...filtered].sort((a, b) => b.wolneMiejsca - a.wolneMiejsca);
 
   const toggleUlubione = (id: number) =>
-    setUlubione(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    setUlubione(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
 
   const handleRezerwujStrefe = async (strefa: Strefa) => {
     setWybranaStrefa(strefa);
@@ -139,17 +159,24 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
       const res = await api.get<(MiejsceWStrefie & { strefaID: number })[]>('/Miejsca/list');
       const wolne = res.data.filter(m => m.strefaID === strefa.strefaID && m.status === 'Wolne');
       setMiejscaStrefy(wolne);
-    } catch { setMiejscaStrefy([]); }
-    finally { setLoadingMiejsca(false); }
+    } catch {
+      setMiejscaStrefy([]);
+    } finally {
+      setLoadingMiejsca(false);
+    }
   };
 
   const parseCechy = (cechy: string): string[] => {
-    try { return JSON.parse(cechy); } catch { return []; }
+    try {
+      return JSON.parse(cechy);
+    } catch {
+      return [];
+    }
   };
 
   const minCena = filtered.length > 0 ? Math.min(...filtered.map(s => Number(s.cenaOd))) : 0;
   const dostepne = strefy.filter(s => s.status === 'Dostępna').length;
-  const pelne    = strefy.filter(s => s.status === 'Pełna').length;
+  const pelne = strefy.filter(s => s.status === 'Pełna').length;
 
   if (loading) return <div className="loader">Pobieranie stref...</div>;
 
@@ -175,27 +202,62 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
           <div className="modal-card" style={{ maxWidth: 500 }} onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3 className="modal-title">Wybierz miejsce</h3>
-              <button className="modal-close" onClick={() => setWybranaStrefa(null)}>✕</button>
+              <button className="modal-close" onClick={() => setWybranaStrefa(null)}>
+                ✕
+              </button>
             </div>
             <p style={{ color: '#64748b', fontSize: '0.88rem', marginBottom: 16 }}>
-              Wolne miejsca w strefie: <b style={{ color: '#1e293b' }}>{wybranaStrefa.nazwaStrefy}</b>
+              Wolne miejsca w strefie:{' '}
+              <b style={{ color: '#1e293b' }}>{wybranaStrefa.nazwaStrefy}</b>
             </p>
             {loadingMiejsca ? (
-              <div style={{ color: '#64748b', padding: '1rem', textAlign: 'center' }}>Ładowanie miejsc...</div>
+              <div style={{ color: '#64748b', padding: '1rem', textAlign: 'center' }}>
+                Ładowanie miejsc...
+              </div>
             ) : miejscaStrefy.length === 0 ? (
-              <div style={{ color: '#64748b', padding: '1rem', textAlign: 'center' }}>Brak wolnych miejsc w tej strefie.</div>
+              <div style={{ color: '#64748b', padding: '1rem', textAlign: 'center' }}>
+                Brak wolnych miejsc w tej strefie.
+              </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 {miejscaStrefy.map(m => (
-                  <div key={m.miejsceID} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: '#f8fafc', borderRadius: 8, border: '1px solid #e2e8f0' }}>
+                  <div
+                    key={m.miejsceID}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '12px 16px',
+                      background: '#f8fafc',
+                      borderRadius: 8,
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
                     <div>
-                      <div style={{ fontWeight: 700, color: '#1e293b' }}>Miejsce {m.numerMiejsca}</div>
-                      <div style={{ fontSize: '0.82rem', color: '#64748b' }}>{m.typ} · {m.wymiary}</div>
+                      <div style={{ fontWeight: 700, color: '#1e293b' }}>
+                        Miejsce {m.numerMiejsca}
+                      </div>
+                      <div style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                        {m.typ} · {m.wymiary}
+                      </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <span style={{ fontWeight: 700, color: '#2563eb' }}>{m.cenaZaDobe} zł/noc</span>
-                      <button onClick={() => setModalMiejsce(m)}
-                        style={{ background: '#e67e00', color: 'white', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontWeight: 700, fontFamily: 'inherit' }}>
+                      <span style={{ fontWeight: 700, color: '#2563eb' }}>
+                        {m.cenaZaDobe} zł/noc
+                      </span>
+                      <button
+                        onClick={() => setModalMiejsce(m)}
+                        style={{
+                          background: '#e67e00',
+                          color: 'white',
+                          border: 'none',
+                          padding: '8px 16px',
+                          borderRadius: 6,
+                          cursor: 'pointer',
+                          fontWeight: 700,
+                          fontFamily: 'inherit',
+                        }}
+                      >
                         Rezerwuj
                       </button>
                     </div>
@@ -214,12 +276,16 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
           <div className="filter-title">Status</div>
           {[
             { label: 'Wszystkie', count: strefy.length },
-            { label: 'Dostępna',  count: dostepne },
-            { label: 'Pełna',     count: pelne },
+            { label: 'Dostępna', count: dostepne },
+            { label: 'Pełna', count: pelne },
           ].map(opt => (
             <label key={opt.label} className="filter-option">
-              <input type="radio" name="status" checked={statusFilter === opt.label}
-                onChange={() => setStatusFilter(opt.label)} />
+              <input
+                type="radio"
+                name="status"
+                checked={statusFilter === opt.label}
+                onChange={() => setStatusFilter(opt.label)}
+              />
               <span>{opt.label}</span>
               <span className="filter-count">{opt.count}</span>
             </label>
@@ -230,21 +296,31 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
           <div className="filter-title">Sortuj według</div>
           {[
             { val: 'domyslnie', label: 'Domyślnie' },
-            { val: 'ocena',     label: 'Najwyżej oceniane' },
-            { val: 'cena-asc',  label: 'Cena rosnąco' },
+            { val: 'ocena', label: 'Najwyżej oceniane' },
+            { val: 'cena-asc', label: 'Cena rosnąco' },
             { val: 'cena-desc', label: 'Cena malejąco' },
-            { val: 'miejsca',   label: 'Najwięcej wolnych' },
+            { val: 'miejsca', label: 'Najwięcej wolnych' },
           ].map(opt => (
             <label key={opt.val} className="filter-option">
-              <input type="radio" name="sort" checked={sortBy === opt.val}
-                onChange={() => setSortBy(opt.val)} />
+              <input
+                type="radio"
+                name="sort"
+                checked={sortBy === opt.val}
+                onChange={() => setSortBy(opt.val)}
+              />
               <span>{opt.label}</span>
             </label>
           ))}
         </div>
 
         {(statusFilter !== 'Wszystkie' || sortBy !== 'domyslnie') && (
-          <button className="filter-clear" onClick={() => { setStatusFilter('Wszystkie'); setSortBy('domyslnie'); }}>
+          <button
+            className="filter-clear"
+            onClick={() => {
+              setStatusFilter('Wszystkie');
+              setSortBy('domyslnie');
+            }}
+          >
             ✕ Wyczyść filtry
           </button>
         )}
@@ -252,8 +328,14 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
 
       <div className="listing-main">
         <div className="summary-bar">
-          <span>Znaleziono <b>{filtered.length}</b> {filtered.length === 1 ? 'strefę' : 'stref'}</span>
-          {filtered.length > 0 && <span>Ceny od <b>{minCena} zł</b> / noc</span>}
+          <span>
+            Znaleziono <b>{filtered.length}</b> {filtered.length === 1 ? 'strefę' : 'stref'}
+          </span>
+          {filtered.length > 0 && (
+            <span>
+              Ceny od <b>{minCena} zł</b> / noc
+            </span>
+          )}
         </div>
 
         <div className="listing-header">
@@ -264,7 +346,6 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
         <div className="listing-grid">
           {filtered.map(s => (
             <div className="listing-card" key={s.strefaID}>
-
               <div className="listing-img-wrap">
                 <img src={s.img} alt={s.nazwaStrefy} className="listing-img" />
                 {s.tag && <span className="listing-tag">{s.tag}</span>}
@@ -278,11 +359,16 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
               </div>
 
               <div className="listing-body">
-                <div className="listing-breadcrumb">Camping › Strefy › {s.nazwaStrefy.split('–')[0].trim()}</div>
+                <div className="listing-breadcrumb">
+                  Camping › Strefy › {s.nazwaStrefy.split('–')[0].trim()}
+                </div>
 
                 <div className="listing-top">
                   <div>
-                    <h3 className="listing-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <h3
+                      className="listing-title"
+                      style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                    >
                       <StrefaIcon nazwa={s.nazwaStrefy} />
                       {s.nazwaStrefy}
                     </h3>
@@ -299,23 +385,44 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                 <p className="listing-desc">{s.opis}</p>
                 <ul className="listing-features">
                   {parseCechy(s.cechy).map((c, i) => (
-                    <li key={i}><CechaIcon cecha={c} />{c}</li>
+                    <li key={i}>
+                      <CechaIcon cecha={c} />
+                      {c}
+                    </li>
                   ))}
                 </ul>
                 <div className="listing-meta">
-                  <span><MdPeopleAlt size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />{s.miejscaLacznie} miejsc łącznie</span>
+                  <span>
+                    <MdPeopleAlt size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                    {s.miejscaLacznie} miejsc łącznie
+                  </span>
                   <span style={{ color: s.wolneMiejsca === 0 ? '#e74c3c' : '#27ae60' }}>
-                    {s.wolneMiejsca === 0
-                      ? <><MdEventBusy size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />Brak wolnych</>
-                      : <><MdEventAvailable size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />{s.wolneMiejsca} wolnych</>
-                    }
+                    {s.wolneMiejsca === 0 ? (
+                      <>
+                        <MdEventBusy
+                          size={14}
+                          style={{ verticalAlign: 'middle', marginRight: 4 }}
+                        />
+                        Brak wolnych
+                      </>
+                    ) : (
+                      <>
+                        <MdEventAvailable
+                          size={14}
+                          style={{ verticalAlign: 'middle', marginRight: 4 }}
+                        />
+                        {s.wolneMiejsca} wolnych
+                      </>
+                    )}
                   </span>
                 </div>
               </div>
 
               <div className="listing-price-box">
                 <div className="listing-price-label">Od</div>
-                <div className="listing-price">{s.cenaOd} zł<span>/noc</span></div>
+                <div className="listing-price">
+                  {s.cenaOd} zł<span>/noc</span>
+                </div>
                 <button
                   className={`listing-btn ${s.status !== 'Dostępna' ? 'disabled' : ''}`}
                   disabled={s.status !== 'Dostępna'}
@@ -325,7 +432,16 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                 </button>
                 <button
                   onClick={() => navigate(`/strefy/${s.strefaID}`)}
-                  style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontSize: '0.82rem', fontFamily: 'inherit', marginTop: 4, textDecoration: 'underline' }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: '#2563eb',
+                    cursor: 'pointer',
+                    fontSize: '0.82rem',
+                    fontFamily: 'inherit',
+                    marginTop: 4,
+                    textDecoration: 'underline',
+                  }}
                 >
                   Szczegóły →
                 </button>
@@ -333,11 +449,12 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                   {s.wolneMiejsca > 0 ? ` ${s.wolneMiejsca} dostępnych` : '✗ Brak miejsc'}
                 </div>
               </div>
-
             </div>
           ))}
           {filtered.length === 0 && (
-            <div className="empty-state" style={{ color: '#888' }}>Brak wyników dla podanych filtrów.</div>
+            <div className="empty-state" style={{ color: '#888' }}>
+              Brak wyników dla podanych filtrów.
+            </div>
           )}
         </div>
       </div>

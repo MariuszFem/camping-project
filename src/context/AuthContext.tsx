@@ -1,6 +1,30 @@
 import { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 
+// Dekoduje payload z tokenu JWT (bez weryfikacji podpisu – to robi backend)
+function decodeJwt(token: string): Record<string, string> | null {
+  try {
+    const payload = token.split('.')[1];
+    const decoded = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+    return JSON.parse(decoded);
+  } catch {
+    return null;
+  }
+}
+
+function getRolaFromToken(token: string | null): string {
+  if (!token) return '';
+  const payload = decodeJwt(token);
+  if (!payload) return '';
+  // ASP.NET Core umieszcza rolę pod tym kluczem
+  return (
+    payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ??
+    payload['role'] ??
+    payload['Role'] ??
+    ''
+  );
+}
+
 interface AuthState {
   isLoggedIn: boolean;
   userImie: string;
@@ -9,38 +33,38 @@ interface AuthState {
   token: string | null;
 }
 
-
 interface AuthContextType extends AuthState {
-  login: (token: string, rola: string, imie: string, klientID?: string) => void;
+  login: (token: string, imie: string, klientID?: string) => void;
   logout: () => void;
-  isAdmin: boolean; 
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const storedToken = localStorage.getItem('token');
+
   const [auth, setAuth] = useState<AuthState>({
-    isLoggedIn: !!localStorage.getItem('token'),
+    isLoggedIn: !!storedToken,
     userImie: localStorage.getItem('imie') || '',
-    rola: localStorage.getItem('rola') || '',
+    // rola pochodzi z tokenu, nie z localStorage – nie można jej podrobić
+    rola: getRolaFromToken(storedToken),
     klientID: localStorage.getItem('klientID'),
-    token: localStorage.getItem('token'),
+    token: storedToken,
   });
 
-  
-  const login = (token: string, rola: string, imie: string, klientID?: string) => {
+  // Sygnatura login nie przyjmuje już roli – bierzemy ją z tokenu
+  const login = (token: string, imie: string, klientID?: string) => {
+    const rola = getRolaFromToken(token);
     localStorage.setItem('token', token);
-    localStorage.setItem('rola', rola);
     localStorage.setItem('imie', imie);
     if (klientID) localStorage.setItem('klientID', klientID);
-    setAuth({ isLoggedIn: true, userImie: imie, rola, klientID: klientID || null, token });
+    // roli celowo NIE zapisujemy do localStorage
+    setAuth({ isLoggedIn: true, userImie: imie, rola, klientID: klientID ?? null, token });
   };
 
- 
   const logout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('rola');
     localStorage.removeItem('imie');
     localStorage.removeItem('klientID');
     setAuth({ isLoggedIn: false, userImie: '', rola: '', klientID: null, token: null });
@@ -55,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 }
 
-
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error('useAuth must be used within AuthProvider');

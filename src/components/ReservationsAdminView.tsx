@@ -1,9 +1,14 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import {
-  MdEventNote, MdCalendarMonth, MdPeople, MdLocationOn,
-  MdCheckCircle, MdCancel, MdDoneAll, MdHourglassEmpty,
-  MdFilterList
+  MdEventNote,
+  MdCalendarMonth,
+  MdPeople,
+  MdLocationOn,
+  MdCheckCircle,
+  MdCancel,
+  MdDoneAll,
+  MdHourglassEmpty,
+  MdFilterList,
 } from 'react-icons/md';
 import api from '../api/axiosInstance';
 
@@ -19,10 +24,10 @@ interface Rezerwacja {
 }
 
 const STATUS_CONFIG: Record<string, { color: string; bg: string; icon: React.ReactNode }> = {
-  'Nowa':        { color: '#2563eb', bg: 'rgba(37,99,235,0.08)',  icon: <MdHourglassEmpty size={13} /> },
-  'Potwierdzona':{ color: '#16a34a', bg: 'rgba(22,163,74,0.08)',  icon: <MdCheckCircle size={13} /> },
-  'Anulowana':   { color: '#dc2626', bg: 'rgba(220,38,38,0.08)',  icon: <MdCancel size={13} /> },
-  'Zakończona':  { color: '#475569', bg: 'rgba(71,85,105,0.08)',  icon: <MdDoneAll size={13} /> },
+  Nowa: { color: '#2563eb', bg: 'rgba(37,99,235,0.08)', icon: <MdHourglassEmpty size={13} /> },
+  Potwierdzona: { color: '#16a34a', bg: 'rgba(22,163,74,0.08)', icon: <MdCheckCircle size={13} /> },
+  Anulowana: { color: '#dc2626', bg: 'rgba(220,38,38,0.08)', icon: <MdCancel size={13} /> },
+  Zakończona: { color: '#475569', bg: 'rgba(71,85,105,0.08)', icon: <MdDoneAll size={13} /> },
 };
 
 export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }) {
@@ -39,7 +44,9 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { fetchRezerwacje(); }, [fetchRezerwacje]);
+  useEffect(() => {
+    fetchRezerwacje();
+  }, [fetchRezerwacje]);
 
   const changeStatus = async (id: number, nowyStatus: string) => {
     setProcessingID(id);
@@ -66,7 +73,6 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
 
   return (
     <div className="admin-page">
-
       <div className="admin-page-header">
         <div>
           <h2 className="admin-page-title">
@@ -77,11 +83,13 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
         </div>
       </div>
       <div className="admin-chips" style={{ marginBottom: 20 }}>
-        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: 4 }}>
-          <MdFilterList size={15} />Filtruj:
+        <span className="rez-filters-label">
+          <MdFilterList size={15} />
+          Filtruj:
         </span>
         {['Wszystkie', 'Nowa', 'Potwierdzona', 'Anulowana', 'Zakończona'].map(s => {
-          const count = s === 'Wszystkie' ? rezerwacje.length : rezerwacje.filter(r => r.status === s).length;
+          const count =
+            s === 'Wszystkie' ? rezerwacje.length : rezerwacje.filter(r => r.status === s).length;
           const cfg = STATUS_CONFIG[s];
           const isActive = filterStatus === s;
           return (
@@ -89,9 +97,17 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
               key={s}
               onClick={() => setFilterStatus(s)}
               className={`rez-filter-btn ${isActive ? 'active' : ''}`}
-              style={isActive ? { background: cfg?.color || '#2563eb', borderColor: cfg?.color || '#2563eb', color: 'white' } : {}}
+              style={
+                isActive
+                  ? {
+                      background: cfg?.color || '#2563eb',
+                      borderColor: cfg?.color || '#2563eb',
+                      color: 'white',
+                    }
+                  : {}
+              }
             >
-              {cfg?.icon && <span style={{ display: 'flex', alignItems: 'center' }}>{cfg.icon}</span>}
+              {cfg?.icon && <span className="rez-filter-icon">{cfg.icon}</span>}
               {s} <span className="rez-filter-count">({count})</span>
             </button>
           );
@@ -99,15 +115,19 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
       </div>
 
       {filtered.length === 0 ? (
-        <div className="admin-empty" style={{ padding: '3rem' }}>
-          <MdEventNote size={40} style={{ opacity: 0.3, display: 'block', margin: '0 auto 12px' }} />
+        <div className="admin-empty">
+          <MdEventNote size={40} className="admin-empty-icon" />
           Brak rezerwacji dla wybranego filtra.
         </div>
       ) : (
         <div className="admin-list">
           {filtered.map(r => {
             const dni = liczbaDni(r.dataPrzyjazdu, r.dataWyjazdu);
-            const cfg = STATUS_CONFIG[r.status] || { color: '#475569', bg: 'rgba(71,85,105,0.08)', icon: null };
+            const cfg = STATUS_CONFIG[r.status] || {
+              color: '#475569',
+              bg: 'rgba(71,85,105,0.08)',
+              icon: null,
+            };
             return (
               <div
                 key={r.rezerwacjaID}
@@ -125,9 +145,14 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                   </div>
                   <div className="rez-meta">
                     <span>
-                      <MdCalendarMonth size={13} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                      <MdCalendarMonth
+                        size={13}
+                        style={{ verticalAlign: 'middle', marginRight: 3 }}
+                      />
                       {formatDate(r.dataPrzyjazdu)} → {formatDate(r.dataWyjazdu)}
-                      <span className="rez-nights">({dni} {dni === 1 ? 'noc' : 'nocy'})</span>
+                      <span className="rez-nights">
+                        ({dni} {dni === 1 ? 'noc' : 'nocy'})
+                      </span>
                     </span>
                     <span>
                       <MdPeople size={13} style={{ verticalAlign: 'middle', marginRight: 3 }} />
@@ -148,14 +173,19 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                         disabled={processingID === r.rezerwacjaID}
                         onClick={() => changeStatus(r.rezerwacjaID, 'Potwierdzona')}
                       >
-                        <MdCheckCircle size={14} style={{ verticalAlign: 'middle', marginRight: 3 }} />Potwierdź
+                        <MdCheckCircle
+                          size={14}
+                          style={{ verticalAlign: 'middle', marginRight: 3 }}
+                        />
+                        Potwierdź
                       </button>
                       <button
                         className="rez-btn rez-btn--cancel"
                         disabled={processingID === r.rezerwacjaID}
                         onClick={() => changeStatus(r.rezerwacjaID, 'Anulowana')}
                       >
-                        <MdCancel size={14} style={{ verticalAlign: 'middle', marginRight: 3 }} />Anuluj
+                        <MdCancel size={14} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                        Anuluj
                       </button>
                     </div>
                   )}
@@ -167,7 +197,8 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                         disabled={processingID === r.rezerwacjaID}
                         onClick={() => changeStatus(r.rezerwacjaID, 'Zakończona')}
                       >
-                        <MdDoneAll size={14} style={{ verticalAlign: 'middle', marginRight: 3 }} />Zakończ
+                        <MdDoneAll size={14} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                        Zakończ
                       </button>
                     </div>
                   )}

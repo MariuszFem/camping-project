@@ -1,10 +1,3 @@
-/**
- * SpotsView.tsx
- * -------------
- * CO ZOSTAŁO ZMIENIONE:
- * fetch() zastąpiony przez Axios (api.get('/Miejsca/list')).
- * Token JWT dołączany automatycznie przez interceptor w axiosInstance.
- */
 import { useState, useEffect } from 'react';
 import { RezerwacjaModal } from './ReservationModal';
 import { GiCampingTent, GiCaravan } from 'react-icons/gi';
@@ -34,8 +27,10 @@ interface Miejsce {
 function Stars({ n }: { n: number }) {
   return (
     <span className="stars">
-      {[1,2,3,4,5].map(i => (
-        <span key={i} style={{ color: i <= n ? '#f59e0b' : '#ddd' }}>★</span>
+      {[1, 2, 3, 4, 5].map(i => (
+        <span key={i} style={{ color: i <= n ? '#f59e0b' : '#ddd' }}>
+          ★
+        </span>
       ))}
     </span>
   );
@@ -43,13 +38,17 @@ function Stars({ n }: { n: number }) {
 
 function ScoreBadge({ score }: { score: number }) {
   const color = score >= 9 ? '#1a7f37' : score >= 8 ? '#2563eb' : '#d97706';
-  return <span className="score-badge" style={{ background: color }}>{score.toFixed(1)}</span>;
+  return (
+    <span className="score-badge" style={{ background: color }}>
+      {score.toFixed(1)}
+    </span>
+  );
 }
 
 function TypIcon({ typ }: { typ: string }) {
   const style = { flexShrink: 0, color: '#64748b' };
-  if (typ === 'Namiot')    return <GiCampingTent size={22} style={style} />;
-  if (typ === 'Kamper')    return <GiCaravan size={22} style={style} />;
+  if (typ === 'Namiot') return <GiCampingTent size={22} style={style} />;
+  if (typ === 'Kamper') return <GiCaravan size={22} style={style} />;
   if (typ === 'Przyczepa') return <TbCaravan size={22} style={style} />;
   return null;
 }
@@ -57,10 +56,10 @@ function TypIcon({ typ }: { typ: string }) {
 export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
   const [miejsca, setMiejsca] = useState<Miejsce[]>([]);
   const [loading, setLoading] = useState(true);
-  const [typFilter, setTypFilter]   = useState('Wszystkie');
+  const [typFilter, setTypFilter] = useState('Wszystkie');
   const [pradFilter, setPradFilter] = useState<boolean | null>(null);
-  const [sortBy, setSortBy]         = useState('domyslnie');
-  const [ulubione, setUlubione]     = useState<number[]>([]);
+  const [sortBy, setSortBy] = useState('domyslnie');
+  const [ulubione, setUlubione] = useState<number[]>([]);
   const [modalMiejsce, setModalMiejsce] = useState<Miejsce | null>(null);
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -76,16 +75,22 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
     `${m.numerMiejsca} ${m.nazwaStrefy} ${m.typ}`.toLowerCase().includes(searchTerm.toLowerCase())
   );
   if (typFilter !== 'Wszystkie') filtered = filtered.filter(m => m.typ === typFilter);
-  if (pradFilter !== null)       filtered = filtered.filter(m => m.prad === pradFilter);
-  if (sortBy === 'cena-asc')     filtered = [...filtered].sort((a,b) => Number(a.cenaZaDobe) - Number(b.cenaZaDobe));
-  if (sortBy === 'cena-desc')    filtered = [...filtered].sort((a,b) => Number(b.cenaZaDobe) - Number(a.cenaZaDobe));
-  if (sortBy === 'ocena')        filtered = [...filtered].sort((a,b) => b.ocena - a.ocena);
+  if (pradFilter !== null) filtered = filtered.filter(m => m.prad === pradFilter);
+  if (sortBy === 'cena-asc')
+    filtered = [...filtered].sort((a, b) => Number(a.cenaZaDobe) - Number(b.cenaZaDobe));
+  if (sortBy === 'cena-desc')
+    filtered = [...filtered].sort((a, b) => Number(b.cenaZaDobe) - Number(a.cenaZaDobe));
+  if (sortBy === 'ocena') filtered = [...filtered].sort((a, b) => b.ocena - a.ocena);
 
   const toggleUlubione = (id: number) =>
-    setUlubione(prev => prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]);
+    setUlubione(prev => (prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id]));
 
   const parseCechy = (cechy: string): string[] => {
-    try { return JSON.parse(cechy); } catch { return []; }
+    try {
+      return JSON.parse(cechy);
+    } catch {
+      return [];
+    }
   };
 
   const typy = ['Wszystkie', 'Namiot', 'Kamper', 'Przyczepa'];
@@ -115,8 +120,12 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
           <div className="filter-title">Typ miejsca</div>
           {typy.map(t => (
             <label key={t} className="filter-option">
-              <input type="radio" name="typ" checked={typFilter === t}
-                onChange={() => setTypFilter(t)} />
+              <input
+                type="radio"
+                name="typ"
+                checked={typFilter === t}
+                onChange={() => setTypFilter(t)}
+              />
               <span>{t}</span>
               <span className="filter-count">
                 {t === 'Wszystkie' ? miejsca.length : miejsca.filter(m => m.typ === t).length}
@@ -129,12 +138,16 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
           <div className="filter-title">Prąd</div>
           {[
             { label: 'Wszystkie', val: null },
-            { label: 'Z prądem',  val: true },
+            { label: 'Z prądem', val: true },
             { label: 'Bez prądu', val: false },
           ].map(opt => (
             <label key={opt.label} className="filter-option">
-              <input type="radio" name="prad" checked={pradFilter === opt.val}
-                onChange={() => setPradFilter(opt.val)} />
+              <input
+                type="radio"
+                name="prad"
+                checked={pradFilter === opt.val}
+                onChange={() => setPradFilter(opt.val)}
+              />
               <span>{opt.label}</span>
             </label>
           ))}
@@ -144,21 +157,31 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
           <div className="filter-title">Sortuj według</div>
           {[
             { val: 'domyslnie', label: 'Domyślnie' },
-            { val: 'ocena',     label: 'Najwyżej oceniane' },
-            { val: 'cena-asc',  label: 'Cena rosnąco' },
+            { val: 'ocena', label: 'Najwyżej oceniane' },
+            { val: 'cena-asc', label: 'Cena rosnąco' },
             { val: 'cena-desc', label: 'Cena malejąco' },
           ].map(opt => (
             <label key={opt.val} className="filter-option">
-              <input type="radio" name="sort" checked={sortBy === opt.val}
-                onChange={() => setSortBy(opt.val)} />
+              <input
+                type="radio"
+                name="sort"
+                checked={sortBy === opt.val}
+                onChange={() => setSortBy(opt.val)}
+              />
               <span>{opt.label}</span>
             </label>
           ))}
         </div>
 
         {(typFilter !== 'Wszystkie' || pradFilter !== null || sortBy !== 'domyslnie') && (
-          <button className="filter-clear"
-            onClick={() => { setTypFilter('Wszystkie'); setPradFilter(null); setSortBy('domyslnie'); }}>
+          <button
+            className="filter-clear"
+            onClick={() => {
+              setTypFilter('Wszystkie');
+              setPradFilter(null);
+              setSortBy('domyslnie');
+            }}
+          >
             ✕ Wyczyść filtry
           </button>
         )}
@@ -166,8 +189,14 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
 
       <div className="listing-main">
         <div className="summary-bar">
-          <span>Znaleziono <b>{filtered.length}</b> {filtered.length === 1 ? 'miejsce' : 'miejsc'}</span>
-          {filtered.length > 0 && <span>Ceny od <b>{minCena} zł</b> / noc</span>}
+          <span>
+            Znaleziono <b>{filtered.length}</b> {filtered.length === 1 ? 'miejsce' : 'miejsc'}
+          </span>
+          {filtered.length > 0 && (
+            <span>
+              Ceny od <b>{minCena} zł</b> / noc
+            </span>
+          )}
         </div>
 
         <div className="listing-header">
@@ -178,7 +207,6 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
         <div className="listing-grid">
           {filtered.map(m => (
             <div className="listing-card" key={m.miejsceID}>
-
               <div className="listing-img-wrap">
                 <img src={m.img} alt={m.numerMiejsca} className="listing-img" />
                 {m.tag && <span className="listing-tag">{m.tag}</span>}
@@ -196,7 +224,10 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                 </div>
                 <div className="listing-top">
                   <div>
-                    <h3 className="listing-title" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <h3
+                      className="listing-title"
+                      style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                    >
                       <TypIcon typ={m.typ} />
                       Miejsce {m.numerMiejsca}
                     </h3>
@@ -209,24 +240,46 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                     <ScoreBadge score={m.ocena} />
                   </div>
                 </div>
-                <p className="listing-desc">{m.nazwaStrefy} · {m.typ} · {m.wymiary}</p>
+                <p className="listing-desc">
+                  {m.nazwaStrefy} · {m.typ} · {m.wymiary}
+                </p>
                 <ul className="listing-features">
                   {parseCechy(m.cechy).map((c, i) => (
-                    <li key={i}><span className="feat-dot">✓</span>{c}</li>
+                    <li key={i}>
+                      <span className="feat-dot">✓</span>
+                      {c}
+                    </li>
                   ))}
                 </ul>
                 <div className="listing-meta">
                   <span>{m.wymiary}</span>
-                  <span>{m.prad
-                    ? <><MdOutlineElectricBolt size={14} style={{ verticalAlign: 'middle', marginRight: 3, color: '#f59e0b' }} />Prąd w cenie</>
-                    : <><MdOutlineElectricalServices size={14} style={{ verticalAlign: 'middle', marginRight: 3, color: '#94a3b8' }} />Bez prądu</>
-                  }</span>
+                  <span>
+                    {m.prad ? (
+                      <>
+                        <MdOutlineElectricBolt
+                          size={14}
+                          style={{ verticalAlign: 'middle', marginRight: 3, color: '#f59e0b' }}
+                        />
+                        Prąd w cenie
+                      </>
+                    ) : (
+                      <>
+                        <MdOutlineElectricalServices
+                          size={14}
+                          style={{ verticalAlign: 'middle', marginRight: 3, color: '#94a3b8' }}
+                        />
+                        Bez prądu
+                      </>
+                    )}
+                  </span>
                 </div>
               </div>
 
               <div className="listing-price-box">
                 <div className="listing-price-label">Od</div>
-                <div className="listing-price">{m.cenaZaDobe} zł<span>/noc</span></div>
+                <div className="listing-price">
+                  {m.cenaZaDobe} zł<span>/noc</span>
+                </div>
                 <button
                   className={`listing-btn ${m.status !== 'Wolne' ? 'disabled' : ''}`}
                   disabled={m.status !== 'Wolne'}
@@ -238,11 +291,12 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                   {m.status === 'Wolne' ? '✓ Dostępne' : '✗ Niedostępne'}
                 </div>
               </div>
-
             </div>
           ))}
           {filtered.length === 0 && (
-            <div className="empty-state" style={{ color: '#888' }}>Brak wyników.</div>
+            <div className="empty-state" style={{ color: '#888' }}>
+              Brak wyników.
+            </div>
           )}
         </div>
       </div>

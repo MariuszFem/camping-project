@@ -15,26 +15,6 @@ interface RegisterFormData {
   haslo2: string;
 }
 
-const inputStyle: React.CSSProperties = {
-  background: 'rgba(255,255,255,0.07)',
-  border: '1px solid rgba(255,255,255,0.15)',
-  borderRadius: 10,
-  padding: '13px 16px',
-  color: 'white',
-  fontSize: '0.95rem',
-  outline: 'none',
-  fontFamily: 'inherit',
-  width: '100%',
-  boxSizing: 'border-box',
-  transition: 'border-color 0.2s',
-};
-
-const errorStyle: React.CSSProperties = {
-  color: '#fca5a5',
-  fontSize: '0.78rem',
-  marginTop: 2,
-};
-
 export function RejestracjaView({ onSuccess, onLoginClick }: Props) {
   const {
     register,
@@ -49,7 +29,6 @@ export function RejestracjaView({ onSuccess, onLoginClick }: Props) {
       setError('haslo2', { message: 'Hasła nie są zgodne.' });
       return;
     }
-
     try {
       const response = await fetch('http://localhost:5050/api/Klienci/rejestracja', {
         method: 'POST',
@@ -73,55 +52,19 @@ export function RejestracjaView({ onSuccess, onLoginClick }: Props) {
       setError('root', { message: 'Brak połączenia z serwerem.' });
     }
   };
+
+  // eslint-disable-next-line react-hooks/incompatible-library
   const haslo = watch('haslo');
 
   return (
     <div className="login-page">
-      <div
-        style={{
-          display: 'flex',
-          width: '100%',
-          maxWidth: 900,
-          background: 'rgba(255,255,255,0.04)',
-          borderRadius: 20,
-          overflow: 'hidden',
-          border: '1px solid rgba(255,255,255,0.1)',
-          boxShadow: '0 25px 50px rgba(0,0,0,0.3)',
-        }}
-      >
+      <div className="register-card">
         {/* Lewa strona */}
-        <div
-          style={{
-            background: 'rgba(0,0,0,0.3)',
-            padding: '60px 40px',
-            width: '38%',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <div style={{ fontSize: '3.5rem', marginBottom: 16 }}></div>
-          <h2 style={{ fontFamily: 'Impact, sans-serif', fontSize: '1.8rem', letterSpacing: 3, margin: '0 0 8px' }}>
-            CAMPING
-          </h2>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', marginBottom: 32 }}>
-            Utwórz konto i zarezerwuj miejsce
-          </p>
-          <ul
-            style={{
-              listStyle: 'none',
-              padding: 0,
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 12,
-              textAlign: 'left',
-              color: 'rgba(255,255,255,0.7)',
-              fontSize: '0.88rem',
-            }}
-          >
+        <div className="register-left">
+          <div className="register-left-icon"></div>
+          <h2 className="register-left-title">CAMPING</h2>
+          <p className="register-left-sub">Utwórz konto i zarezerwuj miejsce</p>
+          <ul className="register-left-list">
             <li>✓ Rezerwacja online 24/7</li>
             <li>✓ Podgląd swoich rezerwacji</li>
             <li>✓ Szybkie anulowanie</li>
@@ -130,44 +73,47 @@ export function RejestracjaView({ onSuccess, onLoginClick }: Props) {
         </div>
 
         {/* Prawa strona */}
-        <div style={{ padding: '50px', flex: 1 }}>
-          <h3 style={{ fontSize: '1.7rem', fontWeight: 700, margin: '0 0 4px' }}>Rejestracja</h3>
-          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.88rem', margin: '0 0 28px' }}>
-            Wypełnij formularz żeby założyć konto
-          </p>
+        <div className="register-right">
+          <h3 className="register-right-title">Rejestracja</h3>
+          <p className="register-right-sub">Wypełnij formularz żeby założyć konto</p>
 
-          <form onSubmit={handleSubmit(onSubmit)} style={{ display: 'flex', flexDirection: 'column', gap: 14 }} noValidate>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+          <form onSubmit={handleSubmit(onSubmit)} className="register-form" noValidate>
+            <div className="register-grid-2">
               <div>
                 <input
-                  style={inputStyle}
+                  className="register-input"
                   placeholder="Imię *"
                   {...register('imie', { required: 'Imię jest wymagane' })}
                 />
-                {errors.imie && <p style={errorStyle}>{errors.imie.message}</p>}
+                {errors.imie && <p className="register-field-error">{errors.imie.message}</p>}
               </div>
               <div>
                 <input
-                  style={inputStyle}
+                  className="register-input"
                   placeholder="Nazwisko *"
                   {...register('nazwisko', { required: 'Nazwisko jest wymagane' })}
                 />
-                {errors.nazwisko && <p style={errorStyle}>{errors.nazwisko.message}</p>}
+                {errors.nazwisko && (
+                  <p className="register-field-error">{errors.nazwisko.message}</p>
+                )}
               </div>
               <div>
                 <input
-                  style={inputStyle}
+                  className="register-input"
                   type="email"
                   placeholder="Email"
                   {...register('email', {
-                    pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Nieprawidłowy email' },
+                    pattern: {
+                      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                      message: 'Nieprawidłowy email',
+                    },
                   })}
                 />
-                {errors.email && <p style={errorStyle}>{errors.email.message}</p>}
+                {errors.email && <p className="register-field-error">{errors.email.message}</p>}
               </div>
               <div>
                 <input
-                  style={inputStyle}
+                  className="register-input"
                   type="tel"
                   placeholder="Telefon"
                   {...register('telefon')}
@@ -177,20 +123,20 @@ export function RejestracjaView({ onSuccess, onLoginClick }: Props) {
 
             <div>
               <input
-                style={inputStyle}
+                className="register-input"
                 placeholder="Login *"
                 {...register('login', {
                   required: 'Login jest wymagany',
                   minLength: { value: 3, message: 'Login musi mieć co najmniej 3 znaki' },
                 })}
               />
-              {errors.login && <p style={errorStyle}>{errors.login.message}</p>}
+              {errors.login && <p className="register-field-error">{errors.login.message}</p>}
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="register-grid-2">
               <div>
                 <input
-                  style={inputStyle}
+                  className="register-input"
                   type="password"
                   placeholder="Hasło *"
                   {...register('haslo', {
@@ -198,11 +144,11 @@ export function RejestracjaView({ onSuccess, onLoginClick }: Props) {
                     minLength: { value: 4, message: 'Hasło musi mieć co najmniej 4 znaki' },
                   })}
                 />
-                {errors.haslo && <p style={errorStyle}>{errors.haslo.message}</p>}
+                {errors.haslo && <p className="register-field-error">{errors.haslo.message}</p>}
               </div>
               <div>
                 <input
-                  style={inputStyle}
+                  className="register-input"
                   type="password"
                   placeholder="Powtórz hasło *"
                   {...register('haslo2', {
@@ -210,83 +156,29 @@ export function RejestracjaView({ onSuccess, onLoginClick }: Props) {
                     validate: value => value === haslo || 'Hasła nie są zgodne',
                   })}
                 />
-                {errors.haslo2 && <p style={errorStyle}>{errors.haslo2.message}</p>}
+                {errors.haslo2 && <p className="register-field-error">{errors.haslo2.message}</p>}
               </div>
             </div>
 
-            {errors.root && (
-              <div
-                style={{
-                  background: 'rgba(220,38,38,0.15)',
-                  border: '1px solid #dc2626',
-                  borderRadius: 8,
-                  padding: '10px 14px',
-                  color: '#fca5a5',
-                  fontSize: '0.88rem',
-                }}
-              >
-                {errors.root.message}
-              </div>
-            )}
+            {errors.root && <div className="register-error-box">{errors.root.message}</div>}
 
             {isSubmitSuccessful && !errors.root && (
-              <div
-                style={{
-                  background: 'rgba(22,163,74,0.15)',
-                  border: '1px solid #16a34a',
-                  borderRadius: 8,
-                  padding: '12px 14px',
-                  color: '#86efac',
-                  textAlign: 'center',
-                  fontWeight: 600,
-                }}
-              >
-                  Konto utworzone! Przekierowuję do logowania...
+              <div className="register-success-box">
+                Konto utworzone! Przekierowuję do logowania...
               </div>
             )}
 
             <button
               type="submit"
+              className="register-submit-btn"
               disabled={isSubmitting || isSubmitSuccessful}
-              style={{
-                background: '#2563eb',
-                color: 'white',
-                padding: '14px',
-                borderRadius: 10,
-                border: 'none',
-                fontWeight: 700,
-                cursor: 'pointer',
-                fontSize: '1rem',
-                fontFamily: 'inherit',
-                opacity: isSubmitting || isSubmitSuccessful ? 0.7 : 1,
-                transition: 'background 0.2s',
-              }}
             >
               {isSubmitting ? 'Rejestrowanie...' : 'Zarejestruj się →'}
             </button>
 
-            <p
-              style={{
-                textAlign: 'center',
-                fontSize: '0.85rem',
-                color: 'rgba(255,255,255,0.45)',
-                margin: 0,
-              }}
-            >
+            <p className="register-login-hint">
               Masz już konto?{' '}
-              <button
-                type="button"
-                onClick={onLoginClick}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#60a5fa',
-                  cursor: 'pointer',
-                  textDecoration: 'underline',
-                  fontFamily: 'inherit',
-                  fontSize: 'inherit',
-                }}
-              >
+              <button type="button" className="register-login-link" onClick={onLoginClick}>
                 Zaloguj się
               </button>
             </p>

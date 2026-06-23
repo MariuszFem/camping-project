@@ -1,0 +1,123 @@
+.my-rez-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.my-rez-empty {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  color: #94a3b8;
+}
+
+.my-rez-empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.my-rez-empty-title {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.my-rez-empty-sub {
+  font-size: 0.9rem;
+}
+
+.my-rez-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.my-rez-card {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.my-rez-card-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.my-rez-place {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.my-rez-zone {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.my-rez-dates {
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+
+.my-rez-nights {
+  margin-left: 8px;
+  color: #64748b;
+}
+
+.my-rez-persons {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
+.my-rez-persons b {
+  color: #f1f5f9;
+}
+
+.my-rez-card-right {
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.my-rez-status-badge {
+  color: white;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: inline-block;
+}
+
+.my-rez-id {
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 6px;
+}
+
+.my-rez-cancel-btn {
+  margin-top: 10px;
+  display: block;
+  width: 100%;
+  background: none;
+  border: 1px solid #dc2626;
+  color: #dc2626;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  font-weight: 600;
+  font-family: var(--font);
+  transition: background 0.2s;
+}
+.my-rez-cancel-btn:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.1);
+}
+.my-rez-cancel-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

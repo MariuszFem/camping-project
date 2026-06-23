@@ -11,12 +11,12 @@ import { RejestracjaView } from './components/RegisterView';
 import { PracownicyView } from './components/EmployeesView';
 import { RezerwacjeAdminView } from './components/ReservationsAdminView';
 import { StrefaDetailView } from './components/ZoneDetailView';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
 
 function App() {
   const [searchTerm, setSearchTerm] = useState('');
 
- 
   const { isLoggedIn, userImie, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -49,9 +49,14 @@ function App() {
     navigate('/strefy');
   };
 
-  const isLightBg = ['strefy', 'miejsca', 'klienci', 'pracownicy', 'rezerwacje', 'moje-rezerwacje'].includes(
-    activeTab
-  );
+  const isLightBg = [
+    'strefy',
+    'miejsca',
+    'klienci',
+    'pracownicy',
+    'rezerwacje',
+    'moje-rezerwacje',
+  ].includes(activeTab);
   const hideFooter = [
     'klienci',
     'pracownicy',
@@ -64,8 +69,8 @@ function App() {
   return (
     <div className="landing-page">
       <nav className="navbar">
-        <div className="nav-left-group" style={{ display: 'flex', alignItems: 'center' }}>
-          <span className="main-title" style={{ cursor: 'pointer' }} onClick={() => navigate('/strefy')}>
+        <div className="nav-left-group">
+          <span className="main-title nav-title-clickable" onClick={() => navigate('/strefy')}>
             CAMPING
           </span>
           <div className="nav-search-container">
@@ -106,15 +111,7 @@ function App() {
 
         <div className="nav-right">
           {isLoggedIn ? (
-            <span
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                fontSize: '0.88rem',
-                color: '#86efac',
-              }}
-            >
+            <span className="nav-user-info">
               {userImie || 'Użytkownik'}
               <button className="logout-link" onClick={handleLogout}>
                 Wyloguj
@@ -128,19 +125,47 @@ function App() {
         </div>
       </nav>
 
-      <main
-        className={`main-content ${isLightBg ? 'main-light' : ''}`}
-        style={{ width: '100%', padding: '20px' }}
-      >
+      <main className={`main-content ${isLightBg ? 'main-light' : ''}`}>
         <Routes>
           <Route path="/" element={<StrefyView searchTerm={searchTerm} />} />
           <Route path="/strefy" element={<StrefyView searchTerm={searchTerm} />} />
           <Route path="/strefy/:id" element={<StrefaDetailView />} />
           <Route path="/miejsca" element={<MiejscaView searchTerm={searchTerm} />} />
-          <Route path="/klienci" element={<KlienciView searchTerm={searchTerm} />} />
-          <Route path="/pracownicy" element={<PracownicyView searchTerm={searchTerm} />} />
-          <Route path="/rezerwacje" element={<RezerwacjeAdminView searchTerm={searchTerm} />} />
-          <Route path="/moje-rezerwacje" element={<MojeRezerwacjeView />} />
+
+          <Route
+            path="/klienci"
+            element={
+              <ProtectedRoute adminOnly>
+                <KlienciView searchTerm={searchTerm} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pracownicy"
+            element={
+              <ProtectedRoute adminOnly>
+                <PracownicyView searchTerm={searchTerm} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rezerwacje"
+            element={
+              <ProtectedRoute adminOnly>
+                <RezerwacjeAdminView searchTerm={searchTerm} />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/moje-rezerwacje"
+            element={
+              <ProtectedRoute requireAuth>
+                <MojeRezerwacjeView />
+              </ProtectedRoute>
+            }
+          />
+
           <Route
             path="/login"
             element={
@@ -159,7 +184,7 @@ function App() {
           <Route
             path="*"
             element={
-              <div style={{ textAlign: 'center', padding: '5rem', color: '#94a3b8' }}>
+              <div className="page-404">
                 <h2>404 – Strona nie istnieje</h2>
               </div>
             }

@@ -32,14 +32,16 @@ export function LoginView({ onLogin, onRegisterClick }: LoginViewProps) {
       const result = await response.json();
 
       if (response.ok) {
-        login(result.token, result.rola, result.imie, result.klientID?.toString());
+        // rola jest teraz dekodowana z tokenu JWT w AuthContext – nie przekazujemy jej z odpowiedzi
+        login(result.token, result.imie, result.klientID?.toString());
         onLogin();
       } else {
         setError('root', { message: result.message || 'Błędny login lub hasło.' });
       }
     } catch {
       setError('root', { message: 'Brak połączenia z serwerem. Sprawdź czy backend działa.' });
-    }  };
+    }
+  };
 
   return (
     <div className="login-page">

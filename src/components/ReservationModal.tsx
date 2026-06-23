@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import api from '../api/axiosInstance';
 
@@ -28,7 +27,13 @@ const weatherCodeToInfo = (code: number): { opis: string; ikona: string } => {
   return { opis: 'Nieznana', ikona: '🌡️' };
 };
 
-export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClose, onSuccess }: Props) {
+export function RezerwacjaModal({
+  miejsceID,
+  nazwaLokalizacji,
+  cenaZaDobe,
+  onClose,
+  onSuccess,
+}: Props) {
   const today = new Date().toISOString().split('T')[0];
 
   const [form, setForm] = useState({ dataPrzyjazdu: '', dataWyjazdu: '', liczbaOsob: 1 });
@@ -55,16 +60,22 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
         opady: json.opady ?? 0,
         ...info,
       });
-    } catch {}
-    finally { setPogodaLoading(false); }
+    } catch {
+    } finally {
+      setPogodaLoading(false);
+    }
   };
 
-  const liczbaDni = form.dataPrzyjazdu && form.dataWyjazdu
-    ? Math.max(0, Math.ceil(
-        (new Date(form.dataWyjazdu).getTime() - new Date(form.dataPrzyjazdu).getTime())
-        / (1000 * 60 * 60 * 24)
-      ))
-    : 0;
+  const liczbaDni =
+    form.dataPrzyjazdu && form.dataWyjazdu
+      ? Math.max(
+          0,
+          Math.ceil(
+            (new Date(form.dataWyjazdu).getTime() - new Date(form.dataPrzyjazdu).getTime()) /
+              (1000 * 60 * 60 * 24)
+          )
+        )
+      : 0;
 
   const sumaDoZaplaty = liczbaDni * Number(cenaZaDobe);
 
@@ -72,9 +83,18 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
     e.preventDefault();
     setError('');
 
-    if (!isLoggedIn) { setError('Musisz być zalogowany żeby złożyć rezerwację.'); return; }
-    if (!form.dataPrzyjazdu || !form.dataWyjazdu) { setError('Wybierz daty przyjazdu i wyjazdu.'); return; }
-    if (new Date(form.dataWyjazdu) <= new Date(form.dataPrzyjazdu)) { setError('Data wyjazdu musi być późniejsza niż przyjazdu.'); return; }
+    if (!isLoggedIn) {
+      setError('Musisz być zalogowany żeby złożyć rezerwację.');
+      return;
+    }
+    if (!form.dataPrzyjazdu || !form.dataWyjazdu) {
+      setError('Wybierz daty przyjazdu i wyjazdu.');
+      return;
+    }
+    if (new Date(form.dataWyjazdu) <= new Date(form.dataPrzyjazdu)) {
+      setError('Data wyjazdu musi być późniejsza niż przyjazdu.');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -104,7 +124,9 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
       <div className="modal-card" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h3 className="modal-title">Rezerwacja</h3>
-          <button className="modal-close" onClick={onClose}>✕</button>
+          <button className="modal-close" onClick={onClose}>
+            ✕
+          </button>
         </div>
 
         <div className="modal-location">
@@ -116,39 +138,49 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
           <div className="modal-row">
             <div className="modal-field">
               <label>Przyjazd</label>
-              <input type="date" min={today} required value={form.dataPrzyjazdu}
-                onChange={e => handleDatePrzyjazdu(e.target.value)} />
+              <input
+                type="date"
+                min={today}
+                required
+                value={form.dataPrzyjazdu}
+                onChange={e => handleDatePrzyjazdu(e.target.value)}
+              />
             </div>
             <div className="modal-field">
               <label>Wyjazd</label>
-              <input type="date" min={form.dataPrzyjazdu || today} required value={form.dataWyjazdu}
-                onChange={e => setForm(prev => ({ ...prev, dataWyjazdu: e.target.value }))} />
+              <input
+                type="date"
+                min={form.dataPrzyjazdu || today}
+                required
+                value={form.dataWyjazdu}
+                onChange={e => setForm(prev => ({ ...prev, dataWyjazdu: e.target.value }))}
+              />
             </div>
           </div>
 
           <div className="modal-field">
             <label>Liczba osób</label>
-            <input type="number" min={1} max={10} value={form.liczbaOsob}
-              onChange={e => setForm(prev => ({ ...prev, liczbaOsob: parseInt(e.target.value) }))} />
+            <input
+              type="number"
+              min={1}
+              max={10}
+              value={form.liczbaOsob}
+              onChange={e => setForm(prev => ({ ...prev, liczbaOsob: parseInt(e.target.value) }))}
+            />
           </div>
 
-          {pogodaLoading && (
-            <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 14px', fontSize: '0.85rem', color: '#64748b' }}>
-              🌡️ Pobieranie prognozy pogody...
-            </div>
-          )}
+          {pogodaLoading && <div className="weather-loading">🌡️ Pobieranie prognozy pogody...</div>}
 
           {pogoda && !pogodaLoading && (
-            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 8, padding: '12px 14px' }}>
-              <div style={{ fontSize: '0.75rem', color: '#3b82f6', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 6 }}>
-                Prognoza pogody na dzień przyjazdu (Mazury)
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <span style={{ fontSize: '2rem' }}>{pogoda.ikona}</span>
+            <div className="weather-widget">
+              <div className="weather-label">Prognoza pogody na dzień przyjazdu (Mazury)</div>
+              <div className="weather-body">
+                <span className="weather-icon">{pogoda.ikona}</span>
                 <div>
-                  <div style={{ fontWeight: 700, color: '#1e293b', fontSize: '0.95rem' }}>{pogoda.opis}</div>
-                  <div style={{ fontSize: '0.82rem', color: '#475569' }}>
-                    🌡️ {pogoda.temp_min}°C – {pogoda.temp_max}°C &nbsp;|&nbsp; 💧 Opady: {pogoda.opady} mm
+                  <div className="weather-desc">{pogoda.opis}</div>
+                  <div className="weather-details">
+                    🌡️ {pogoda.temp_min}°C – {pogoda.temp_max}°C &nbsp;|&nbsp; 💧 Opady:{' '}
+                    {pogoda.opady} mm
                   </div>
                 </div>
               </div>
@@ -157,18 +189,22 @@ export function RezerwacjaModal({ miejsceID, nazwaLokalizacji, cenaZaDobe, onClo
 
           {liczbaDni > 0 && (
             <div className="modal-summary">
-              <span>{liczbaDni} {liczbaDni === 1 ? 'noc' : 'nocy'} × {cenaZaDobe} zł</span>
+              <span>
+                {liczbaDni} {liczbaDni === 1 ? 'noc' : 'nocy'} × {cenaZaDobe} zł
+              </span>
               <span className="modal-total">{sumaDoZaplaty} zł</span>
             </div>
           )}
 
           {error && <div className="modal-error">{error}</div>}
 
-          {!isLoggedIn && (
-            <div className="modal-warning">Zaloguj się żeby złożyć rezerwację.</div>
-          )}
+          {!isLoggedIn && <div className="modal-warning">Zaloguj się żeby złożyć rezerwację.</div>}
 
-          <button type="submit" className="modal-submit-btn" disabled={loading || !isLoggedIn || !!error}>
+          <button
+            type="submit"
+            className="modal-submit-btn"
+            disabled={loading || !isLoggedIn || !!error}
+          >
             {loading ? 'Składanie...' : 'Zarezerwuj'}
           </button>
         </form>

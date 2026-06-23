@@ -6,12 +6,16 @@
 @import './styles/admin.css';
 @import './styles/footer.css';
 @import './styles/search.css';
-
+@import './styles/zone-detail.css';
+@import './styles/my-reservations.css';
+@import './styles/register.css';
+@import './styles/weather.css';
+@import './styles/app-layout.css';
 
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.65);
+  background: rgba(0, 0, 0, 0.65);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,7 +29,7 @@
   padding: 2.5rem;
   width: 100%;
   max-width: 580px;
-  box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
   color: #1e293b;
 }
 
@@ -53,7 +57,10 @@
   transition: background 0.2s;
   font-weight: 600;
 }
-.modal-close:hover { background: #e2e8f0; color: #1e293b; }
+.modal-close:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
 
 .modal-location {
   display: flex;
@@ -112,12 +119,14 @@
   color: #1e293b;
   font-size: 1rem;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
   font-family: var(--font);
 }
 .modal-field input:focus {
   border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
 }
 
 .modal-summary {
@@ -168,11 +177,21 @@
   font-size: 1.05rem;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition:
+    background 0.2s,
+    transform 0.1s;
   margin-top: 0.4rem;
 }
-.modal-submit-btn:hover:not(:disabled) { background: #1d4ed8; transform: translateY(-1px); }
-.modal-submit-btn:disabled { background: #e2e8f0; color: #94a3b8; cursor: not-allowed; transform: none; }
+.modal-submit-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+.modal-submit-btn:disabled {
+  background: #e2e8f0;
+  color: #94a3b8;
+  cursor: not-allowed;
+  transform: none;
+}
 
 .success-toast {
   position: fixed;
@@ -184,11 +203,17 @@
   border-radius: 10px;
   font-weight: 700;
   z-index: 999;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   animation: slideIn 0.3s ease;
 }
 
 @keyframes slideIn {
-  from { transform: translateX(100px); opacity: 0; }
-  to   { transform: translateX(0);     opacity: 1; }
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 }

@@ -12,10 +12,10 @@ interface Rezerwacja {
 }
 
 const statusColor: Record<string, string> = {
-  'Nowa':       '#2563eb',
-  'Potwierdzona': '#16a34a',
-  'Anulowana':  '#dc2626',
-  'Zakończona': '#64748b',
+  Nowa: '#2563eb',
+  Potwierdzona: '#16a34a',
+  Anulowana: '#dc2626',
+  Zakończona: '#64748b',
 };
 
 export function MojeRezerwacjeView() {
@@ -26,7 +26,10 @@ export function MojeRezerwacjeView() {
   const klientID = localStorage.getItem('klientID');
 
   const fetchRezerwacje = useCallback(() => {
-    if (!klientID) { setLoading(false); return; }
+    if (!klientID) {
+      setLoading(false);
+      return;
+    }
     api
       .get(`/Rezerwacje/moje/${klientID}`)
       .then(res => setRezerwacje(res.data))
@@ -34,7 +37,9 @@ export function MojeRezerwacjeView() {
       .finally(() => setLoading(false));
   }, [klientID]);
 
-  useEffect(() => { fetchRezerwacje(); }, [fetchRezerwacje]);
+  useEffect(() => {
+    fetchRezerwacje();
+  }, [fetchRezerwacje]);
 
   const handleAnuluj = async (id: number) => {
     setAnulowanieID(id);
@@ -49,75 +54,57 @@ export function MojeRezerwacjeView() {
   };
 
   const formatDate = (d: string) => new Date(d).toLocaleDateString('pl-PL');
-
   const liczbaDni = (od: string, do_: string) =>
     Math.ceil((new Date(do_).getTime() - new Date(od).getTime()) / (1000 * 60 * 60 * 24));
 
   if (loading) return <div className="loader">Pobieranie rezerwacji...</div>;
 
   return (
-    <div style={{ maxWidth: 900, margin: '0 auto' }}>
+    <div className="my-rez-wrapper">
       <h2 className="section-title">Moje rezerwacje</h2>
 
       {rezerwacje.length === 0 ? (
-        <div style={{ background: '#1e293b', borderRadius: 12, padding: '3rem', textAlign: 'center', color: '#94a3b8' }}>
-          <div style={{ fontSize: '3rem', marginBottom: '1rem' }}></div>
-          <p style={{ fontSize: '1.1rem' }}>Nie masz jeszcze żadnych rezerwacji.</p>
-          <p style={{ fontSize: '0.9rem' }}>Przejdź do zakładki Miejsca i zarezerwuj swoje miejsce.</p>
+        <div className="my-rez-empty">
+          <div className="my-rez-empty-icon"></div>
+          <p className="my-rez-empty-title">Nie masz jeszcze żadnych rezerwacji.</p>
+          <p className="my-rez-empty-sub">
+            Przejdź do zakładki Miejsca i zarezerwuj swoje miejsce.
+          </p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="my-rez-list">
           {rezerwacje.map(r => {
             const dni = liczbaDni(r.dataPrzyjazdu, r.dataWyjazdu);
             return (
-              <div key={r.rezerwacjaID} style={{
-                background: '#1e293b',
-                borderRadius: 12,
-                padding: '1.5rem',
-                border: '1px solid rgba(255,255,255,0.08)',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                gap: 20
-              }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  <div style={{ fontSize: '1.05rem', fontWeight: 700, color: '#f1f5f9' }}>
-                    Miejsce {r.numerMiejsca}
-                  </div>
-                  <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>{r.nazwaStrefy}</div>
-                  <div style={{ fontSize: '0.88rem', color: '#cbd5e1', marginTop: 4 }}>
+              <div key={r.rezerwacjaID} className="my-rez-card">
+                <div className="my-rez-card-left">
+                  <div className="my-rez-place">Miejsce {r.numerMiejsca}</div>
+                  <div className="my-rez-zone">{r.nazwaStrefy}</div>
+                  <div className="my-rez-dates">
                     {formatDate(r.dataPrzyjazdu)} → {formatDate(r.dataWyjazdu)}
-                    <span style={{ marginLeft: 8, color: '#64748b' }}>({dni} {dni === 1 ? 'noc' : 'nocy'})</span>
+                    <span className="my-rez-nights">
+                      ({dni} {dni === 1 ? 'noc' : 'nocy'})
+                    </span>
                   </div>
-                  <div style={{ fontSize: '0.85rem', color: '#94a3b8' }}>
-                    Liczba osób: <b style={{ color: '#f1f5f9' }}>{r.liczbaOsob}</b>
+                  <div className="my-rez-persons">
+                    Liczba osób: <b>{r.liczbaOsob}</b>
                   </div>
                 </div>
 
-                <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                  <span style={{
-                    background: statusColor[r.status] || '#475569',
-                    color: 'white',
-                    padding: '6px 16px',
-                    borderRadius: 20,
-                    fontSize: '0.82rem',
-                    fontWeight: 700
-                  }}>
+                <div className="my-rez-card-right">
+                  {/* Kolor statusu jest dynamiczny – musi zostać jako inline */}
+                  <span
+                    className="my-rez-status-badge"
+                    style={{ background: statusColor[r.status] || '#475569' }}
+                  >
                     {r.status}
                   </span>
-                  <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: 6 }}>
-                    #{r.rezerwacjaID}
-                  </div>
+                  <div className="my-rez-id">#{r.rezerwacjaID}</div>
                   {r.status === 'Nowa' && (
                     <button
-                      onClick={() => handleAnuluj(r.rezerwacjaID)}
+                      className="my-rez-cancel-btn"
                       disabled={anulowanieID === r.rezerwacjaID}
-                      style={{
-                        marginTop: 10, display: 'block', width: '100%',
-                        background: 'none', border: '1px solid #dc2626',
-                        color: '#dc2626', borderRadius: 6, padding: '5px 10px',
-                        fontSize: '0.78rem', cursor: 'pointer', fontWeight: 600
-                      }}
+                      onClick={() => handleAnuluj(r.rezerwacjaID)}
                     >
                       {anulowanieID === r.rezerwacjaID ? '...' : 'Anuluj'}
                     </button>

@@ -1,11 +1,20 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import {
-  MdBadge, MdPersonAdd, MdClose, MdEdit, MdDelete,
-  MdEmail, MdPhone, MdWork, MdKey, MdPeople,
-  MdAdminPanelSettings, MdManageAccounts
+  MdBadge,
+  MdPersonAdd,
+  MdClose,
+  MdEdit,
+  MdDelete,
+  MdEmail,
+  MdPhone,
+  MdWork,
+  MdKey,
+  MdPeople,
+  MdAdminPanelSettings,
+  MdManageAccounts,
 } from 'react-icons/md';
 import api from '../api/axiosInstance';
+import { useAuth } from '../context/AuthContext';
 
 interface Pracownik {
   pracownikID: number;
@@ -19,10 +28,20 @@ interface Pracownik {
   rola: string | null;
 }
 
-const emptyForm = { imie: '', nazwisko: '', stanowisko: '', telefon: '', email: '', login: '', haslo: '', rola: 'Pracownik' };
+const emptyForm = {
+  imie: '',
+  nazwisko: '',
+  stanowisko: '',
+  telefon: '',
+  email: '',
+  login: '',
+  haslo: '',
+  rola: 'Pracownik',
+};
 
 const avatarColor = (id: number) => ['#2563eb', '#7c3aed', '#0891b2', '#db2777', '#d97706'][id % 5];
-const initials = (imie: string, nazwisko: string) => `${imie?.[0] || '?'}${nazwisko?.[0] || '?'}`.toUpperCase();
+const initials = (imie: string, nazwisko: string) =>
+  `${imie?.[0] || '?'}${nazwisko?.[0] || '?'}`.toUpperCase();
 
 export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
   const [pracownicy, setPracownicy] = useState<Pracownik[]>([]);
@@ -32,8 +51,7 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
-  const rola = localStorage.getItem('rola');
-  const isAdmin = rola === 'Admin';
+  const { isAdmin } = useAuth();
 
   const fetchPracownicy = useCallback(() => {
     api
@@ -43,10 +61,14 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
       .finally(() => setLoading(false));
   }, []);
 
-  useEffect(() => { fetchPracownicy(); }, [fetchPracownicy]);
+  useEffect(() => {
+    fetchPracownicy();
+  }, [fetchPracownicy]);
 
   const filtered = pracownicy.filter(p =>
-    `${p.imie} ${p.nazwisko} ${p.stanowisko} ${p.email} ${p.rola}`.toLowerCase().includes(searchTerm.toLowerCase())
+    `${p.imie} ${p.nazwisko} ${p.stanowisko} ${p.email} ${p.rola}`
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
   );
 
   const handleSave = async (e: React.FormEvent) => {
@@ -74,7 +96,16 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
   };
 
   const handleEdit = (p: Pracownik) => {
-    setForm({ imie: p.imie, nazwisko: p.nazwisko, stanowisko: p.stanowisko || '', telefon: p.telefon || '', email: p.email || '', login: p.login || '', haslo: '', rola: p.rola || 'Pracownik' });
+    setForm({
+      imie: p.imie,
+      nazwisko: p.nazwisko,
+      stanowisko: p.stanowisko || '',
+      telefon: p.telefon || '',
+      email: p.email || '',
+      login: p.login || '',
+      haslo: '',
+      rola: p.rola || 'Pracownik',
+    });
     setEditID(p.pracownikID);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -90,7 +121,6 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
 
   return (
     <div className="admin-page">
-
       {/* Header */}
       <div className="admin-page-header">
         <div>
@@ -101,11 +131,25 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
           <p className="admin-page-subtitle">{pracownicy.length} osób w systemie</p>
         </div>
         {isAdmin && (
-          <button className="admin-add-btn" onClick={() => { setShowForm(!showForm); setEditID(null); setForm(emptyForm); }}>
-            {showForm && !editID
-              ? <><MdClose size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />Anuluj</>
-              : <><MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />Dodaj pracownika</>
-            }
+          <button
+            className="admin-add-btn"
+            onClick={() => {
+              setShowForm(!showForm);
+              setEditID(null);
+              setForm(emptyForm);
+            }}
+          >
+            {showForm && !editID ? (
+              <>
+                <MdClose size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                Anuluj
+              </>
+            ) : (
+              <>
+                <MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                Dodaj pracownika
+              </>
+            )}
           </button>
         )}
       </div>
@@ -114,20 +158,27 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
       {showForm && (
         <div className="admin-form-card">
           <h4 className="admin-form-title">
-            {editID
-              ? <><MdEdit size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} />Edytuj pracownika</>
-              : <><MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} />Nowy pracownik</>
-            }
+            {editID ? (
+              <>
+                <MdEdit size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} />
+                Edytuj pracownika
+              </>
+            ) : (
+              <>
+                <MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} />
+                Nowy pracownik
+              </>
+            )}
           </h4>
           <form onSubmit={handleSave}>
             <div className="admin-form-grid">
               {[
-                { key: 'imie',       label: 'Imię *',      required: true },
-                { key: 'nazwisko',   label: 'Nazwisko *',  required: true },
+                { key: 'imie', label: 'Imię *', required: true },
+                { key: 'nazwisko', label: 'Nazwisko *', required: true },
                 { key: 'stanowisko', label: 'Stanowisko' },
-                { key: 'email',      label: 'Email',       type: 'email' },
-                { key: 'telefon',    label: 'Telefon' },
-                { key: 'login',      label: 'Login' },
+                { key: 'email', label: 'Email', type: 'email' },
+                { key: 'telefon', label: 'Telefon' },
+                { key: 'login', label: 'Login' },
               ].map(({ key, label, required, type }) => (
                 <div key={key} className="admin-form-field">
                   <label>{label}</label>
@@ -140,12 +191,26 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
                 </div>
               ))}
               <div className="admin-form-field">
-                <label>Hasło {editID && <span style={{ fontWeight: 400, textTransform: 'none' }}>(zostaw puste aby nie zmieniać)</span>}</label>
-                <input type="password" value={form.haslo} onChange={e => setForm({ ...form, haslo: e.target.value })} />
+                <label>
+                  Hasło{' '}
+                  {editID && (
+                    <span style={{ fontWeight: 400, textTransform: 'none' }}>
+                      (zostaw puste aby nie zmieniać)
+                    </span>
+                  )}
+                </label>
+                <input
+                  type="password"
+                  value={form.haslo}
+                  onChange={e => setForm({ ...form, haslo: e.target.value })}
+                />
               </div>
               <div className="admin-form-field">
                 <label>Rola</label>
-                <select value={form.rola} onChange={e => setForm({ ...form, rola: e.target.value })}>
+                <select
+                  value={form.rola}
+                  onChange={e => setForm({ ...form, rola: e.target.value })}
+                >
                   <option value="Pracownik">Pracownik</option>
                   <option value="Admin">Admin</option>
                 </select>
@@ -172,7 +237,11 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
           <MdManageAccounts size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
           Pracownicy: <b>{pracownicy.filter(p => p.rola === 'Pracownik').length}</b>
         </span>
-        {searchTerm && <span className="admin-chip">Wyniki: <b>{filtered.length}</b></span>}
+        {searchTerm && (
+          <span className="admin-chip">
+            Wyniki: <b>{filtered.length}</b>
+          </span>
+        )}
       </div>
 
       {/* Lista */}
@@ -185,37 +254,74 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
 
             <div className="admin-info">
               <div className="admin-name-row">
-                <span className="admin-name">{p.imie} {p.nazwisko}</span>
-                <span className={`admin-role-badge ${p.rola === 'Admin' ? 'badge-admin' : 'badge-worker'}`}>
-                  {p.rola === 'Admin'
-                    ? <><MdAdminPanelSettings size={11} style={{ verticalAlign: 'middle', marginRight: 3 }} />Admin</>
-                    : <><MdManageAccounts size={11} style={{ verticalAlign: 'middle', marginRight: 3 }} />Pracownik</>
-                  }
+                <span className="admin-name">
+                  {p.imie} {p.nazwisko}
+                </span>
+                <span
+                  className={`admin-role-badge ${p.rola === 'Admin' ? 'badge-admin' : 'badge-worker'}`}
+                >
+                  {p.rola === 'Admin' ? (
+                    <>
+                      <MdAdminPanelSettings
+                        size={11}
+                        style={{ verticalAlign: 'middle', marginRight: 3 }}
+                      />
+                      Admin
+                    </>
+                  ) : (
+                    <>
+                      <MdManageAccounts
+                        size={11}
+                        style={{ verticalAlign: 'middle', marginRight: 3 }}
+                      />
+                      Pracownik
+                    </>
+                  )}
                 </span>
               </div>
               <div className="admin-meta">
-                {p.stanowisko && <span><MdWork size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />{p.stanowisko}</span>}
-                {p.email     && <span><MdEmail size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />{p.email}</span>}
-                {p.telefon   && <span><MdPhone size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />{p.telefon}</span>}
-                {p.login     && <span><MdKey size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />{p.login}</span>}
+                {p.stanowisko && (
+                  <span>
+                    <MdWork size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    {p.stanowisko}
+                  </span>
+                )}
+                {p.email && (
+                  <span>
+                    <MdEmail size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    {p.email}
+                  </span>
+                )}
+                {p.telefon && (
+                  <span>
+                    <MdPhone size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    {p.telefon}
+                  </span>
+                )}
+                {p.login && (
+                  <span>
+                    <MdKey size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    {p.login}
+                  </span>
+                )}
               </div>
             </div>
 
             {isAdmin && (
               <div className="admin-actions">
                 <button className="admin-btn-edit" onClick={() => handleEdit(p)}>
-                  <MdEdit size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />Edytuj
+                  <MdEdit size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                  Edytuj
                 </button>
                 <button className="admin-btn-delete" onClick={() => handleDelete(p.pracownikID)}>
-                  <MdDelete size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />Usuń
+                  <MdDelete size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                  Usuń
                 </button>
               </div>
             )}
           </div>
         ))}
-        {filtered.length === 0 && (
-          <div className="admin-empty">Brak pracowników.</div>
-        )}
+        {filtered.length === 0 && <div className="admin-empty">Brak pracowników.</div>}
       </div>
     </div>
   );
