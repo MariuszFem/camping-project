@@ -4,6 +4,7 @@ import { GiCampingTent, GiCaravan } from 'react-icons/gi';
 import { MdOutlineElectricBolt, MdOutlineElectricalServices } from 'react-icons/md';
 import { TbCaravan } from 'react-icons/tb';
 import api from '../api/axiosInstance';
+import styles from '../styles/listing.module.css';
 
 interface Miejsce {
   miejsceID: number;
@@ -28,7 +29,7 @@ function Stars({ n }: { n: number }) {
   return (
     <span className="stars">
       {[1, 2, 3, 4, 5].map(i => (
-        <span key={i} style={{ color: i <= n ? '#f59e0b' : '#ddd' }}>
+        <span key={i} className={i <= n ? styles.starActive : styles.starInactive}>
           ★
         </span>
       ))}
@@ -37,19 +38,18 @@ function Stars({ n }: { n: number }) {
 }
 
 function ScoreBadge({ score }: { score: number }) {
-  const color = score >= 9 ? '#1a7f37' : score >= 8 ? '#2563eb' : '#d97706';
+  const colorClass = score >= 9 ? styles.scoreBadgeGreen : score >= 8 ? styles.scoreBadgeBlue : styles.scoreBadgeOrange;
   return (
-    <span className="score-badge" style={{ background: color }}>
+    <span className={`score-badge ${colorClass}`}>
       {score.toFixed(1)}
     </span>
   );
 }
 
 function TypIcon({ typ }: { typ: string }) {
-  const style = { flexShrink: 0, color: '#64748b' };
-  if (typ === 'Namiot') return <GiCampingTent size={22} style={style} />;
-  if (typ === 'Kamper') return <GiCaravan size={22} style={style} />;
-  if (typ === 'Przyczepa') return <TbCaravan size={22} style={style} />;
+  if (typ === 'Namiot') return <GiCampingTent size={22} className={styles.iconGray} />;
+  if (typ === 'Kamper') return <GiCaravan size={22} className={styles.iconGray} />;
+  if (typ === 'Przyczepa') return <TbCaravan size={22} className={styles.iconGray} />;
   return null;
 }
 
@@ -200,7 +200,7 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
         </div>
 
         <div className="listing-header">
-          <h2 className="section-title" style={{ margin: 0 }}></h2>
+          <h2 className={`section-title ${styles.sectionTitleNoMargin}`}></h2>
           <span className="listing-count">{filtered.length} wyników</span>
         </div>
 
@@ -225,16 +225,15 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                 <div className="listing-top">
                   <div>
                     <h3
-                      className="listing-title"
-                      style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                      className={`listing-title ${styles.listingTitleFlex}`}
                     >
                       <TypIcon typ={m.typ} />
                       Miejsce {m.numerMiejsca}
                     </h3>
                     <Stars n={m.gwiazdki} />
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ color: '#888', fontSize: '0.78rem' }}>
+                  <div className={styles.opinionRow}>
+                    <span className={styles.opinionText}>
                       Zobacz {m.liczbaOpinii} opinii
                     </span>
                     <ScoreBadge score={m.ocena} />
@@ -258,7 +257,7 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                       <>
                         <MdOutlineElectricBolt
                           size={14}
-                          style={{ verticalAlign: 'middle', marginRight: 3, color: '#f59e0b' }}
+                          className={styles.iconElectricYellow}
                         />
                         Prąd w cenie
                       </>
@@ -266,7 +265,7 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
                       <>
                         <MdOutlineElectricalServices
                           size={14}
-                          style={{ verticalAlign: 'middle', marginRight: 3, color: '#94a3b8' }}
+                          className={styles.iconElectricGray}
                         />
                         Bez prądu
                       </>
@@ -294,7 +293,7 @@ export function MiejscaView({ searchTerm = '' }: { searchTerm?: string }) {
             </div>
           ))}
           {filtered.length === 0 && (
-            <div className="empty-state" style={{ color: '#888' }}>
+            <div className={`empty-state ${styles.emptyState}`}>
               Brak wyników.
             </div>
           )}

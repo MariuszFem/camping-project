@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api/axiosInstance';
+import styles from '../styles/listing.module.css';
 
 interface Strefa {
   strefaID: number;
@@ -23,7 +24,7 @@ function Stars({ n }: { n: number }) {
   return (
     <span>
       {[1, 2, 3, 4, 5].map(i => (
-        <span key={i} style={{ color: i <= n ? '#f59e0b' : '#cbd5e1', fontSize: '1.1rem' }}>
+        <span key={i} className={i <= n ? styles.starDetailActive : styles.starDetailInactive}>
           ★
         </span>
       ))}

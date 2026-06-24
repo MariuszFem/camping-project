@@ -22,6 +22,7 @@ import {
   MdOutlineFamilyRestroom,
   MdOutlineNightsStay,
 } from 'react-icons/md';
+import styles from '../styles/listing.module.css';
 
 interface Strefa {
   strefaID: number;
@@ -53,7 +54,7 @@ function Stars({ n }: { n: number }) {
   return (
     <span className="stars">
       {[1, 2, 3, 4, 5].map(i => (
-        <span key={i} style={{ color: i <= n ? '#f59e0b' : '#ddd' }}>
+        <span key={i} className={i <= n ? styles.starActive : styles.starInactive}>
           ★
         </span>
       ))}
@@ -62,9 +63,9 @@ function Stars({ n }: { n: number }) {
 }
 
 function ScoreBadge({ score }: { score: number }) {
-  const color = score >= 9 ? '#1a7f37' : score >= 8 ? '#2563eb' : '#d97706';
+  const colorClass = score >= 9 ? styles.scoreBadgeGreen : score >= 8 ? styles.scoreBadgeBlue : styles.scoreBadgeOrange;
   return (
-    <span className="score-badge" style={{ background: color }}>
+    <span className={`score-badge ${colorClass}`}>
       {score.toFixed(1)}
     </span>
   );
@@ -73,25 +74,25 @@ function ScoreBadge({ score }: { score: number }) {
 function CechaIcon({ cecha }: { cecha: string }) {
   const lower = cecha.toLowerCase();
   if (lower.includes('wifi') || lower.includes('wi-fi') || lower.includes('internet'))
-    return <MdOutlineWifi size={15} style={{ flexShrink: 0 }} />;
+    return <MdOutlineWifi size={15} className={styles.iconShrink} />;
   if (lower.includes('parking'))
-    return <MdOutlineLocalParking size={15} style={{ flexShrink: 0 }} />;
+    return <MdOutlineLocalParking size={15} className={styles.iconShrink} />;
   if (lower.includes('basen') || lower.includes('pool'))
-    return <MdOutlinePool size={15} style={{ flexShrink: 0 }} />;
+    return <MdOutlinePool size={15} className={styles.iconShrink} />;
   if (lower.includes('prysznic') || lower.includes('sanitarny') || lower.includes('łazienka'))
-    return <MdOutlineShower size={15} style={{ flexShrink: 0 }} />;
+    return <MdOutlineShower size={15} className={styles.iconShrink} />;
   if (lower.includes('prąd') || lower.includes('elektryczn'))
-    return <MdOutlineElectricBolt size={15} style={{ flexShrink: 0 }} />;
+    return <MdOutlineElectricBolt size={15} className={styles.iconShrink} />;
   if (lower.includes('zwierz') || lower.includes('pies') || lower.includes('kot'))
-    return <MdOutlinePets size={15} style={{ flexShrink: 0 }} />;
+    return <MdOutlinePets size={15} className={styles.iconShrink} />;
   if (lower.includes('plac') || lower.includes('dzieci') || lower.includes('play'))
-    return <MdOutlinePlayCircle size={15} style={{ flexShrink: 0 }} />;
+    return <MdOutlinePlayCircle size={15} className={styles.iconShrink} />;
   if (lower.includes('restauracj') || lower.includes('jedzenie') || lower.includes('bar'))
-    return <MdOutlineRestaurant size={15} style={{ flexShrink: 0 }} />;
+    return <MdOutlineRestaurant size={15} className={styles.iconShrink} />;
   if (lower.includes('ognisko') || lower.includes('grill'))
-    return <MdOutlineLocalFireDepartment size={15} style={{ flexShrink: 0 }} />;
+    return <MdOutlineLocalFireDepartment size={15} className={styles.iconShrink} />;
   return (
-    <span className="feat-dot" style={{ flexShrink: 0 }}>
+    <span className={`feat-dot ${styles.iconShrink}`}>
       ✓
     </span>
   );
@@ -99,20 +100,19 @@ function CechaIcon({ cecha }: { cecha: string }) {
 
 function StrefaIcon({ nazwa }: { nazwa: string }) {
   const lower = nazwa.toLowerCase();
-  const style = { flexShrink: 0, color: '#64748b' };
   if (lower.includes('leśn') || lower.includes('las'))
-    return <MdOutlineForest size={22} style={style} />;
+    return <MdOutlineForest size={22} className={styles.iconGray} />;
   if (lower.includes('jezior') || lower.includes('wod') || lower.includes('plaż'))
-    return <MdOutlineWater size={22} style={style} />;
+    return <MdOutlineWater size={22} className={styles.iconGray} />;
   if (lower.includes('central') || lower.includes('główn'))
-    return <MdOutlineLocationCity size={22} style={style} />;
+    return <MdOutlineLocationCity size={22} className={styles.iconGray} />;
   if (lower.includes('premium') || lower.includes('vip') || lower.includes('lux'))
-    return <MdOutlineStars size={22} style={style} />;
+    return <MdOutlineStars size={22} className={styles.iconGray} />;
   if (lower.includes('rodzin') || lower.includes('dzieci'))
-    return <MdOutlineFamilyRestroom size={22} style={style} />;
+    return <MdOutlineFamilyRestroom size={22} className={styles.iconGray} />;
   if (lower.includes('cicha') || lower.includes('spokojn') || lower.includes('nocna'))
-    return <MdOutlineNightsStay size={22} style={style} />;
-  return <MdOutlineForest size={22} style={style} />;
+    return <MdOutlineNightsStay size={22} className={styles.iconGray} />;
+  return <MdOutlineForest size={22} className={styles.iconGray} />;
 }
 
 export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
@@ -199,64 +199,47 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
 
       {wybranaStrefa && !modalMiejsce && (
         <div className="modal-overlay" onClick={() => setWybranaStrefa(null)}>
-          <div className="modal-card" style={{ maxWidth: 500 }} onClick={e => e.stopPropagation()}>
+          <div className={`modal-card ${styles.modalNarrow}`} onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3 className="modal-title">Wybierz miejsce</h3>
               <button className="modal-close" onClick={() => setWybranaStrefa(null)}>
                 ✕
               </button>
             </div>
-            <p style={{ color: '#64748b', fontSize: '0.88rem', marginBottom: 16 }}>
+            <p className={styles.modalSubtitle}>
               Wolne miejsca w strefie:{' '}
-              <b style={{ color: '#1e293b' }}>{wybranaStrefa.nazwaStrefy}</b>
+              <b className={styles.modalSubtitleBold}>{wybranaStrefa.nazwaStrefy}</b>
             </p>
             {loadingMiejsca ? (
-              <div style={{ color: '#64748b', padding: '1rem', textAlign: 'center' }}>
+              <div className={styles.modalLoading}>
                 Ładowanie miejsc...
               </div>
             ) : miejscaStrefy.length === 0 ? (
-              <div style={{ color: '#64748b', padding: '1rem', textAlign: 'center' }}>
+              <div className={styles.modalLoading}>
                 Brak wolnych miejsc w tej strefie.
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div className={styles.spotsColumn}>
                 {miejscaStrefy.map(m => (
                   <div
                     key={m.miejsceID}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '12px 16px',
-                      background: '#f8fafc',
-                      borderRadius: 8,
-                      border: '1px solid #e2e8f0',
-                    }}
+                    className={styles.spotRow}
                   >
                     <div>
-                      <div style={{ fontWeight: 700, color: '#1e293b' }}>
+                      <div className={styles.spotName}>
                         Miejsce {m.numerMiejsca}
                       </div>
-                      <div style={{ fontSize: '0.82rem', color: '#64748b' }}>
+                      <div className={styles.spotMeta}>
                         {m.typ} · {m.wymiary}
                       </div>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <span style={{ fontWeight: 700, color: '#2563eb' }}>
+                    <div className={styles.spotActions}>
+                      <span className={styles.spotPrice}>
                         {m.cenaZaDobe} zł/noc
                       </span>
                       <button
                         onClick={() => setModalMiejsce(m)}
-                        style={{
-                          background: '#e67e00',
-                          color: 'white',
-                          border: 'none',
-                          padding: '8px 16px',
-                          borderRadius: 6,
-                          cursor: 'pointer',
-                          fontWeight: 700,
-                          fontFamily: 'inherit',
-                        }}
+                        className={styles.spotReserveBtn}
                       >
                         Rezerwuj
                       </button>
@@ -339,7 +322,7 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
         </div>
 
         <div className="listing-header">
-          <h2 className="section-title" style={{ margin: 0 }}></h2>
+          <h2 className={`section-title ${styles.sectionTitleNoMargin}`}></h2>
           <span className="listing-count">{filtered.length} wyników</span>
         </div>
 
@@ -366,16 +349,15 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                 <div className="listing-top">
                   <div>
                     <h3
-                      className="listing-title"
-                      style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+                      className={`listing-title ${styles.listingTitleFlex}`}
                     >
                       <StrefaIcon nazwa={s.nazwaStrefy} />
                       {s.nazwaStrefy}
                     </h3>
                     <Stars n={s.gwiazdki} />
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ color: '#888', fontSize: '0.78rem' }}>
+                  <div className={styles.opinionRow}>
+                    <span className={styles.opinionText}>
                       Zobacz {s.liczbaOpinii} opinii
                     </span>
                     <ScoreBadge score={s.ocena} />
@@ -393,15 +375,15 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                 </ul>
                 <div className="listing-meta">
                   <span>
-                    <MdPeopleAlt size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                    <MdPeopleAlt size={14} className={styles.iconInline} />
                     {s.miejscaLacznie} miejsc łącznie
                   </span>
-                  <span style={{ color: s.wolneMiejsca === 0 ? '#e74c3c' : '#27ae60' }}>
+                  <span className={s.wolneMiejsca === 0 ? styles.textRed : styles.textGreen}>
                     {s.wolneMiejsca === 0 ? (
                       <>
                         <MdEventBusy
                           size={14}
-                          style={{ verticalAlign: 'middle', marginRight: 4 }}
+                          className={styles.iconInline}
                         />
                         Brak wolnych
                       </>
@@ -409,7 +391,7 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                       <>
                         <MdEventAvailable
                           size={14}
-                          style={{ verticalAlign: 'middle', marginRight: 4 }}
+                          className={styles.iconInline}
                         />
                         {s.wolneMiejsca} wolnych
                       </>
@@ -432,16 +414,7 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
                 </button>
                 <button
                   onClick={() => navigate(`/strefy/${s.strefaID}`)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#2563eb',
-                    cursor: 'pointer',
-                    fontSize: '0.82rem',
-                    fontFamily: 'inherit',
-                    marginTop: 4,
-                    textDecoration: 'underline',
-                  }}
+                  className={styles.detailsLink}
                 >
                   Szczegóły →
                 </button>
@@ -452,7 +425,7 @@ export function StrefyView({ searchTerm = '' }: { searchTerm?: string }) {
             </div>
           ))}
           {filtered.length === 0 && (
-            <div className="empty-state" style={{ color: '#888' }}>
+            <div className={`empty-state ${styles.emptyState}`}>
               Brak wyników dla podanych filtrów.
             </div>
           )}

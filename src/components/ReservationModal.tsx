@@ -61,6 +61,7 @@ export function RezerwacjaModal({
         ...info,
       });
     } catch {
+      // ignorowane — pogoda jest opcjonalna
     } finally {
       setPogodaLoading(false);
     }

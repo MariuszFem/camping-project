@@ -11,6 +11,7 @@ import {
   MdFilterList,
 } from 'react-icons/md';
 import api from '../api/axiosInstance';
+import styles from '../styles/listing.module.css';
 
 interface Rezerwacja {
   rezerwacjaID: number;
@@ -76,13 +77,13 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
       <div className="admin-page-header">
         <div>
           <h2 className="admin-page-title">
-            <MdEventNote size={24} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+            <MdEventNote size={24} className={styles.iconTitleLg} />
             Zarządzanie rezerwacjami
           </h2>
           <p className="admin-page-subtitle">{rezerwacje.length} rezerwacji łącznie</p>
         </div>
       </div>
-      <div className="admin-chips" style={{ marginBottom: 20 }}>
+      <div className={`admin-chips ${styles.chipsSpaced}`}>
         <span className="rez-filters-label">
           <MdFilterList size={15} />
           Filtruj:
@@ -96,13 +97,12 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
-              className={`rez-filter-btn ${isActive ? 'active' : ''}`}
+              className={`rez-filter-btn ${isActive ? 'active' : ''} ${isActive ? styles.rezFilterActive : ''}`}
               style={
                 isActive
                   ? {
                       background: cfg?.color || '#2563eb',
                       borderColor: cfg?.color || '#2563eb',
-                      color: 'white',
                     }
                   : {}
               }
@@ -139,7 +139,7 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                     <span className="rez-id">#{r.rezerwacjaID}</span>
                     <span className="rez-client">{r.klientImie}</span>
                     <span className="rez-place">
-                      <MdLocationOn size={13} style={{ verticalAlign: 'middle', marginRight: 2 }} />
+                      <MdLocationOn size={13} className={styles.iconInlineXs} />
                       Miejsce {r.numerMiejsca}
                     </span>
                   </div>
@@ -147,7 +147,7 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                     <span>
                       <MdCalendarMonth
                         size={13}
-                        style={{ verticalAlign: 'middle', marginRight: 3 }}
+                        className={styles.iconInlineSm}
                       />
                       {formatDate(r.dataPrzyjazdu)} → {formatDate(r.dataWyjazdu)}
                       <span className="rez-nights">
@@ -155,7 +155,7 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                       </span>
                     </span>
                     <span>
-                      <MdPeople size={13} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                      <MdPeople size={13} className={styles.iconInlineSm} />
                       {r.liczbaOsob} {r.liczbaOsob === 1 ? 'osoba' : 'osoby'}
                     </span>
                   </div>
@@ -175,7 +175,7 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                       >
                         <MdCheckCircle
                           size={14}
-                          style={{ verticalAlign: 'middle', marginRight: 3 }}
+                          className={styles.iconInlineSm}
                         />
                         Potwierdź
                       </button>
@@ -184,7 +184,7 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                         disabled={processingID === r.rezerwacjaID}
                         onClick={() => changeStatus(r.rezerwacjaID, 'Anulowana')}
                       >
-                        <MdCancel size={14} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                        <MdCancel size={14} className={styles.iconInlineSm} />
                         Anuluj
                       </button>
                     </div>
@@ -197,7 +197,7 @@ export function RezerwacjeAdminView({ searchTerm = '' }: { searchTerm?: string }
                         disabled={processingID === r.rezerwacjaID}
                         onClick={() => changeStatus(r.rezerwacjaID, 'Zakończona')}
                       >
-                        <MdDoneAll size={14} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                        <MdDoneAll size={14} className={styles.iconInlineSm} />
                         Zakończ
                       </button>
                     </div>

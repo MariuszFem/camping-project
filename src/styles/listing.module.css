@@ -1,0 +1,321 @@
+/* === Stars === */
+.starActive {
+  color: #f59e0b;
+}
+
+.starInactive {
+  color: #ddd;
+}
+
+/* === Score Badge (dynamic bg via className) === */
+.scoreBadgeGreen {
+  background: #1a7f37;
+}
+
+.scoreBadgeBlue {
+  background: #2563eb;
+}
+
+.scoreBadgeOrange {
+  background: #d97706;
+}
+
+/* === Icon helpers === */
+.iconShrink {
+  flex-shrink: 0;
+}
+
+.iconGray {
+  flex-shrink: 0;
+  color: #64748b;
+}
+
+.iconInline {
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.iconInlineSm {
+  vertical-align: middle;
+  margin-right: 3px;
+}
+
+.iconElectricYellow {
+  vertical-align: middle;
+  margin-right: 3px;
+  color: #f59e0b;
+}
+
+.iconElectricGray {
+  vertical-align: middle;
+  margin-right: 3px;
+  color: #94a3b8;
+}
+
+/* === Listing title with icon === */
+.listingTitleFlex {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* === Review / opinion row === */
+.opinionRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.opinionText {
+  color: #888;
+  font-size: 0.78rem;
+}
+
+/* === Section title no margin === */
+.sectionTitleNoMargin {
+  margin: 0;
+}
+
+/* === Empty state === */
+.emptyState {
+  color: #888;
+}
+
+/* === Wolne / pełne colors === */
+.textGreen {
+  color: #27ae60;
+}
+
+.textRed {
+  color: #e74c3c;
+}
+
+/* === Modal (zone spots picker) === */
+.modalNarrow {
+  max-width: 500px;
+}
+
+.modalSubtitle {
+  color: #64748b;
+  font-size: 0.88rem;
+  margin-bottom: 16px;
+}
+
+.modalSubtitleBold {
+  color: #1e293b;
+}
+
+.modalLoading {
+  color: #64748b;
+  padding: 1rem;
+  text-align: center;
+}
+
+.spotsColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.spotRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.spotName {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.spotMeta {
+  font-size: 0.82rem;
+  color: #64748b;
+}
+
+.spotActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.spotPrice {
+  font-weight: 700;
+  color: #2563eb;
+}
+
+.spotReserveBtn {
+  background: #e67e00;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  font-family: inherit;
+}
+
+.spotReserveBtn:hover {
+  background: #cf6f00;
+}
+
+/* === Details link === */
+.detailsLink {
+  background: none;
+  border: none;
+  color: #2563eb;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: inherit;
+  margin-top: 4px;
+  text-decoration: underline;
+}
+
+.detailsLink:hover {
+  color: #1d4ed8;
+}
+
+/* === Admin icon sizes === */
+.iconTitleLg {
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+.iconBtnMd {
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
+.iconFormTitle {
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* === Hint label (password) === */
+.hintLabel {
+  font-weight: 400;
+  text-transform: none;
+}
+
+/* === Reservation admin chips margin === */
+.chipsSpaced {
+  margin-bottom: 20px;
+}
+
+/* === Reservation filter active state variants === */
+.rezFilterActive {
+  color: white;
+}
+
+/* === Reservation row border (dynamic colors) === */
+.rezBorderBlue {
+  border-left: 4px solid #2563eb;
+}
+
+.rezBorderGreen {
+  border-left: 4px solid #16a34a;
+}
+
+.rezBorderRed {
+  border-left: 4px solid #dc2626;
+}
+
+.rezBorderGray {
+  border-left: 4px solid #475569;
+}
+
+/* === Reservation status badge backgrounds === */
+.rezStatusBlue {
+  background: #2563eb;
+}
+
+.rezStatusGreen {
+  background: #16a34a;
+}
+
+.rezStatusRed {
+  background: #dc2626;
+}
+
+.rezStatusGray {
+  background: #475569;
+}
+
+/* === Location icon tiny margin === */
+.iconInlineXs {
+  vertical-align: middle;
+  margin-right: 2px;
+}
+
+/* === Clients badge variants === */
+.badgeActive {
+  background: #f0fdf4;
+  color: #15803d;
+  border-color: #bbf7d0;
+}
+
+.badgeInactive {
+  background: #f8fafc;
+  color: #94a3b8;
+  border-color: #e2e8f0;
+}
+
+/* === Login form === */
+.formError {
+  color: #ff4d4d;
+  font-size: 0.8rem;
+}
+
+.loginRootError {
+  color: #ff4d4d;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.registerPrompt {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 0.5rem;
+}
+
+.registerLink {
+  background: none;
+  border: none;
+  color: #60a5fa;
+  cursor: pointer;
+  text-decoration: underline;
+  font-family: inherit;
+}
+
+/* === ZoneDetail Stars === */
+.starDetailActive {
+  color: #f59e0b;
+  font-size: 1.1rem;
+}
+
+.starDetailInactive {
+  color: #cbd5e1;
+  font-size: 1.1rem;
+}
+
+/* === My Reservations status badge (dynamic via statusColor map) === */
+.myRezStatusNowa {
+  background: #2563eb;
+}
+
+.myRezStatusPotwierdzona {
+  background: #16a34a;
+}
+
+.myRezStatusAnulowana {
+  background: #dc2626;
+}
+
+.myRezStatusZakonczona {
+  background: #64748b;
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../api/axiosInstance';
+import styles from '../styles/listing.module.css';
 
 interface Rezerwacja {
   rezerwacjaID: number;
@@ -12,10 +13,10 @@ interface Rezerwacja {
 }
 
 const statusColor: Record<string, string> = {
-  Nowa: '#2563eb',
-  Potwierdzona: '#16a34a',
-  Anulowana: '#dc2626',
-  Zakończona: '#64748b',
+  Nowa: styles.myRezStatusNowa,
+  Potwierdzona: styles.myRezStatusPotwierdzona,
+  Anulowana: styles.myRezStatusAnulowana,
+  Zakończona: styles.myRezStatusZakonczona,
 };
 
 export function MojeRezerwacjeView() {
@@ -92,10 +93,9 @@ export function MojeRezerwacjeView() {
                 </div>
 
                 <div className="my-rez-card-right">
-                  {/* Kolor statusu jest dynamiczny – musi zostać jako inline */}
+                  {/* Status badge */}
                   <span
-                    className="my-rez-status-badge"
-                    style={{ background: statusColor[r.status] || '#475569' }}
+                    className={`my-rez-status-badge ${statusColor[r.status] || styles.myRezStatusZakonczona}`}
                   >
                     {r.status}
                   </span>

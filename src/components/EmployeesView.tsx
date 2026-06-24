@@ -15,6 +15,7 @@ import {
 } from 'react-icons/md';
 import api from '../api/axiosInstance';
 import { useAuth } from '../context/AuthContext';
+import styles from '../styles/listing.module.css';
 
 interface Pracownik {
   pracownikID: number;
@@ -125,7 +126,7 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
       <div className="admin-page-header">
         <div>
           <h2 className="admin-page-title">
-            <MdBadge size={24} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+            <MdBadge size={24} className={styles.iconTitleLg} />
             Pracownicy
           </h2>
           <p className="admin-page-subtitle">{pracownicy.length} osób w systemie</p>
@@ -141,12 +142,12 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
           >
             {showForm && !editID ? (
               <>
-                <MdClose size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                <MdClose size={16} className={styles.iconBtnMd} />
                 Anuluj
               </>
             ) : (
               <>
-                <MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                <MdPersonAdd size={16} className={styles.iconBtnMd} />
                 Dodaj pracownika
               </>
             )}
@@ -160,12 +161,12 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
           <h4 className="admin-form-title">
             {editID ? (
               <>
-                <MdEdit size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} />
+                <MdEdit size={16} className={styles.iconFormTitle} />
                 Edytuj pracownika
               </>
             ) : (
               <>
-                <MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} />
+                <MdPersonAdd size={16} className={styles.iconFormTitle} />
                 Nowy pracownik
               </>
             )}
@@ -194,7 +195,7 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
                 <label>
                   Hasło{' '}
                   {editID && (
-                    <span style={{ fontWeight: 400, textTransform: 'none' }}>
+                    <span className={styles.hintLabel}>
                       (zostaw puste aby nie zmieniać)
                     </span>
                   )}
@@ -226,15 +227,15 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
       {/* Statystyki */}
       <div className="admin-chips">
         <span className="admin-chip">
-          <MdPeople size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+          <MdPeople size={13} className={styles.iconBtnMd} />
           Wszyscy: <b>{pracownicy.length}</b>
         </span>
         <span className="admin-chip admin-chip--blue">
-          <MdAdminPanelSettings size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+          <MdAdminPanelSettings size={13} className={styles.iconBtnMd} />
           Adminów: <b>{pracownicy.filter(p => p.rola === 'Admin').length}</b>
         </span>
         <span className="admin-chip admin-chip--purple">
-          <MdManageAccounts size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+          <MdManageAccounts size={13} className={styles.iconBtnMd} />
           Pracownicy: <b>{pracownicy.filter(p => p.rola === 'Pracownik').length}</b>
         </span>
         {searchTerm && (
@@ -264,7 +265,7 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
                     <>
                       <MdAdminPanelSettings
                         size={11}
-                        style={{ verticalAlign: 'middle', marginRight: 3 }}
+                        className={styles.iconInlineSm}
                       />
                       Admin
                     </>
@@ -272,7 +273,7 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
                     <>
                       <MdManageAccounts
                         size={11}
-                        style={{ verticalAlign: 'middle', marginRight: 3 }}
+                        className={styles.iconInlineSm}
                       />
                       Pracownik
                     </>
@@ -282,25 +283,25 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
               <div className="admin-meta">
                 {p.stanowisko && (
                   <span>
-                    <MdWork size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    <MdWork size={12} className={styles.iconInlineSm} />
                     {p.stanowisko}
                   </span>
                 )}
                 {p.email && (
                   <span>
-                    <MdEmail size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    <MdEmail size={12} className={styles.iconInlineSm} />
                     {p.email}
                   </span>
                 )}
                 {p.telefon && (
                   <span>
-                    <MdPhone size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    <MdPhone size={12} className={styles.iconInlineSm} />
                     {p.telefon}
                   </span>
                 )}
                 {p.login && (
                   <span>
-                    <MdKey size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    <MdKey size={12} className={styles.iconInlineSm} />
                     {p.login}
                   </span>
                 )}
@@ -310,11 +311,11 @@ export function PracownicyView({ searchTerm = '' }: { searchTerm?: string }) {
             {isAdmin && (
               <div className="admin-actions">
                 <button className="admin-btn-edit" onClick={() => handleEdit(p)}>
-                  <MdEdit size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                  <MdEdit size={14} className={styles.iconBtnMd} />
                   Edytuj
                 </button>
                 <button className="admin-btn-delete" onClick={() => handleDelete(p.pracownikID)}>
-                  <MdDelete size={14} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                  <MdDelete size={14} className={styles.iconBtnMd} />
                   Usuń
                 </button>
               </div>

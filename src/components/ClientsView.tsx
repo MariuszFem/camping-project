@@ -12,6 +12,7 @@ import {
   MdVerifiedUser,
 } from 'react-icons/md';
 import api from '../api/axiosInstance';
+import styles from '../styles/listing.module.css';
 
 interface Klient {
   klientID: number;
@@ -85,7 +86,7 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
       <div className="admin-page-header">
         <div>
           <h2 className="admin-page-title">
-            <MdPeople size={24} style={{ verticalAlign: 'middle', marginRight: 8 }} />
+            <MdPeople size={24} className={styles.iconTitleLg} />
             Klienci
           </h2>
           <p className="admin-page-subtitle">{klienci.length} zarejestrowanych klientów</p>
@@ -106,12 +107,12 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
           <button className="admin-add-btn" onClick={() => setShowForm(!showForm)}>
             {showForm ? (
               <>
-                <MdClose size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                <MdClose size={16} className={styles.iconBtnMd} />
                 Anuluj
               </>
             ) : (
               <>
-                <MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+                <MdPersonAdd size={16} className={styles.iconBtnMd} />
                 Dodaj klienta
               </>
             )}
@@ -123,7 +124,7 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
       {showForm && (
         <div className="admin-form-card">
           <h4 className="admin-form-title">
-            <MdPersonAdd size={16} style={{ verticalAlign: 'middle', marginRight: 6 }} />
+            <MdPersonAdd size={16} className={styles.iconFormTitle} />
             Nowy klient
           </h4>
           <form onSubmit={handleAdd}>
@@ -173,15 +174,15 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
       {/* Statystyki */}
       <div className="admin-chips">
         <span className="admin-chip">
-          <MdPeople size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+          <MdPeople size={13} className={styles.iconBtnMd} />
           Wszyscy: <b>{klienci.length}</b>
         </span>
         <span className="admin-chip admin-chip--green">
-          <MdVerifiedUser size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+          <MdVerifiedUser size={13} className={styles.iconBtnMd} />
           Aktywni: <b>{klienci.filter(k => k.rezerwacje > 0).length}</b>
         </span>
         <span className="admin-chip">
-          <MdPersonOff size={13} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+          <MdPersonOff size={13} className={styles.iconBtnMd} />
           Nowi: <b>{klienci.filter(k => k.rezerwacje === 0).length}</b>
         </span>
         {activeSearch && (
@@ -204,32 +205,27 @@ export function KlienciView({ searchTerm = '' }: { searchTerm?: string }) {
                   {k.imie} {k.nazwisko}
                 </span>
                 <span
-                  className={`admin-role-badge ${k.rezerwacje > 0 ? 'badge-admin' : 'badge-worker'}`}
-                  style={
-                    k.rezerwacje > 0
-                      ? { background: '#f0fdf4', color: '#15803d', borderColor: '#bbf7d0' }
-                      : { background: '#f8fafc', color: '#94a3b8', borderColor: '#e2e8f0' }
-                  }
+                  className={`admin-role-badge ${k.rezerwacje > 0 ? 'badge-admin' : 'badge-worker'} ${k.rezerwacje > 0 ? styles.badgeActive : styles.badgeInactive}`}
                 >
-                  <MdBookmarks size={11} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                  <MdBookmarks size={11} className={styles.iconInlineSm} />
                   {k.rezerwacje} {k.rezerwacje === 1 ? 'rezerwacja' : 'rezerwacji'}
                 </span>
               </div>
               <div className="admin-meta">
                 {k.email && (
                   <span>
-                    <MdEmail size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    <MdEmail size={12} className={styles.iconInlineSm} />
                     {k.email}
                   </span>
                 )}
                 {k.telefon && (
                   <span>
-                    <MdPhone size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                    <MdPhone size={12} className={styles.iconInlineSm} />
                     {k.telefon}
                   </span>
                 )}
                 <span>
-                  <MdCalendarMonth size={12} style={{ verticalAlign: 'middle', marginRight: 3 }} />
+                  <MdCalendarMonth size={12} className={styles.iconInlineSm} />
                   {new Date(k.dataRejestracji).toLocaleDateString('pl-PL')}
                 </span>
               </div>

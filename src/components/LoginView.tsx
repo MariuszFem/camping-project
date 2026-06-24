@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { useAuth } from '../context/AuthContext';
+import styles from '../styles/listing.module.css';
 
 interface LoginViewProps {
   onLogin: () => void;
@@ -61,7 +62,7 @@ export function LoginView({ onLogin, onRegisterClick }: LoginViewProps) {
                 {...register('login', { required: 'Login jest wymagany' })}
               />
               {errors.login && (
-                <span style={{ color: '#ff4d4d', fontSize: '0.8rem' }}>{errors.login.message}</span>
+                <span className={styles.formError}>{errors.login.message}</span>
               )}
             </div>
             <div className="input-group">
@@ -74,13 +75,12 @@ export function LoginView({ onLogin, onRegisterClick }: LoginViewProps) {
                 })}
               />
               {errors.haslo && (
-                <span style={{ color: '#ff4d4d', fontSize: '0.8rem' }}>{errors.haslo.message}</span>
+                <span className={styles.formError}>{errors.haslo.message}</span>
               )}
             </div>
             {errors.root && (
               <div
-                className="login-error"
-                style={{ color: '#ff4d4d', marginBottom: '1rem', fontSize: '0.9rem' }}
+                className={`login-error ${styles.loginRootError}`}
               >
                 {errors.root.message}
               </div>
@@ -89,26 +89,12 @@ export function LoginView({ onLogin, onRegisterClick }: LoginViewProps) {
               {isSubmitting ? 'Łączenie...' : 'Zaloguj się →'}
             </button>
             {onRegisterClick && (
-              <div
-                style={{
-                  textAlign: 'center',
-                  fontSize: '0.85rem',
-                  color: '#94a3b8',
-                  marginTop: '0.5rem',
-                }}
-              >
+              <div className={styles.registerPrompt}>
                 Nie masz konta?{' '}
                 <button
                   type="button"
                   onClick={onRegisterClick}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#60a5fa',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    fontFamily: 'inherit',
-                  }}
+                  className={styles.registerLink}
                 >
                   Zarejestruj się
                 </button>
